@@ -1,0 +1,21 @@
+ensembl_id,gene_symbol,feature_type,literature_context
+ENSG00000203859,HSD3B2,Gene Expression,Steroid biosynthesis
+ENSG00000277893,SRD5A2,Gene Expression,5-alpha reductase; androgen amplification
+ENSG00000115970,THADA,Gene Expression,PCOS susceptibility locus (GWAS)
+ENSG00000138039,LHCGR,Gene Expression,LH/CG receptor; ovarian theca signalling
+ENSG00000170820,FSHR,Gene Expression,FSH receptor; follicular development
+ENSG00000169047,IRS1,Gene Expression,Insulin receptor substrate 1
+ENSG00000145545,SRD5A1,Gene Expression,5-alpha reductase; androgen amplification
+ENSG00000136574,GATA4,Gene Expression,Granulosa cell transcription factor
+ENSG00000147465,STAR,Gene Expression,Steroidogenic Acute Regulatory protein
+ENSG00000130948,HSD17B3,Gene Expression,Androgen biosynthesis
+ENSG00000119522,DENND1A,Gene Expression,PCOS susceptibility locus (GWAS)
+ENSG00000148795,CYP17A1,Gene Expression,Steroidogenesis; ovarian androgen production
+ENSG00000254647,INS,Gene Expression,Insulin gene
+ENSG00000131808,FSHB,Gene Expression,FSH beta subunit; PCOS GWAS
+ENSG00000135409,AMHR2,Gene Expression,AMH receptor; granulosa cell signalling
+ENSG00000185950,IRS2,Gene Expression,Insulin receptor substrate 2
+ENSG00000137869,CYP19A1,Gene Expression,Aromatase; androgen-to-estrogen conversion
+ENSG00000104899,AMH,Gene Expression,Anti-Mullerian Hormone; elevated in PCOS follicles
+ENSG00000171105,INSR,Gene Expression,Insulin receptor; insulin resistance in PCOS
+ENSG00000169083,AR,Gene Expression,Androgen receptor; hyperandrogenism phenotype

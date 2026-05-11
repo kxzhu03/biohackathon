@@ -1,0 +1,22 @@
+{
+  "model_name": "logistic_regression",
+  "threshold": 0.51,
+  "threshold_source": "cv_oof_training",
+  "roc_auc": 0.6602318494965553,
+  "recall": 0.6284313725490196,
+  "specificity": 0.6182432432432432,
+  "precision": 0.5315091210613598,
+  "f1": 0.5759209344115005,
+  "balanced_accuracy": 0.6233373078961314,
+  "confusion_matrix": [
+    [
+      915,
+      565
+    ],
+    [
+      379,
+      641
+    ]
+  ],
+  "warning": "Synthetic data. Use only as a symptom-overlap prompt."
+}

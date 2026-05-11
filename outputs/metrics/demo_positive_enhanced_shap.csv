@@ -1,0 +1,9 @@
+feature,patient_value,shap_log_odds_contribution
+follicle_no_r,9.0,0.09153008036599948
+follicle_no_l,10.0,0.09049226122003838
+skin_darkening_y_n,1.0,0.06874444399609597
+weight_gain_y_n,1.0,0.06618160741114872
+hair_growth_y_n,0.0,-0.030693403292195876
+cycle_length_days,3.0,0.029017127840246352
+cycle_irregular_flag,1.0,0.028502140409641562
+cycle_r_i,4.0,0.025264047330670256

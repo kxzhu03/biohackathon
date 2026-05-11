@@ -1,0 +1,9 @@
+feature,patient_value,shap_log_odds_contribution
+skin_darkening_y_n,1.0,0.13738771484363757
+weight_gain_y_n,1.0,0.0965208027479096
+cycle_length_days,3.0,0.058388269901247306
+hair_growth_y_n,0.0,-0.05372054114148646
+cycle_r_i,4.0,0.04775987665142973
+cycle_irregular_flag,1.0,0.04606700440387957
+pimples_y_n,1.0,0.04180765182323973
+bmi,29.270994027135,0.011630457794108238

@@ -1,0 +1,26 @@
+{
+  "known_pcos_case_screening": {
+    "probability": 0.8860810540060967,
+    "threshold": 0.285,
+    "prediction": 1,
+    "risk_tier": "High"
+  },
+  "known_pcos_case_enhanced": {
+    "probability": 0.9067223837392016,
+    "threshold": 0.38,
+    "prediction": 1,
+    "risk_tier": "High"
+  },
+  "known_non_pcos_case_screening": {
+    "probability": 0.20790098425682638,
+    "threshold": 0.285,
+    "prediction": 0,
+    "risk_tier": "Low"
+  },
+  "known_non_pcos_case_enhanced": {
+    "probability": 0.21383710032615938,
+    "threshold": 0.38,
+    "prediction": 0,
+    "risk_tier": "Low"
+  }
+}

@@ -1,0 +1,14 @@
+# Pinned to the versions used when training the artifacts under outputs/models/.
+# joblib model artifacts are sensitive to scikit-learn major versions, so the
+# pins are tight rather than open ranges.
+pandas==2.2.3
+numpy==2.2.6
+scikit-learn==1.6.1
+matplotlib==3.10.1
+seaborn==0.13.2
+openpyxl==3.1.5
+joblib==1.4.2
+shap==0.51.0
+streamlit==1.32.0
+jupyter==1.0.0
+nbconvert==7.17.0
