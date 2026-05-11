@@ -1416,6 +1416,9 @@ shap==0.51.0
 streamlit==1.32.0
 jupyter==1.0.0
 nbconvert==7.17.0
+reportlab==4.4.9
+pillow==10.3.0
+pypdf==4.0.0
 `;
 
 const files = [
