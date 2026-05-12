@@ -1,0 +1,44 @@
+{
+  "target_coverage": 0.9,
+  "alpha": 0.1,
+  "q_hat": 0.48601590683211715,
+  "quantile_level": 0.9098360655737705,
+  "empirical_coverage": 0.9117647058823529,
+  "mean_set_size": 0.9926470588235294,
+  "singleton_fraction": 0.9926470588235294,
+  "doubleton_fraction": 0.0,
+  "empty_fraction": 0.007352941176470588,
+  "n_proper_train": 283,
+  "n_calibration": 122,
+  "n_holdout": 136,
+  "model_name": "random_forest",
+  "random_state": 42,
+  "worked_examples": [
+    {
+      "description": "first holdout patient with confirmed PCOS",
+      "holdout_index": 395,
+      "true_label": 1,
+      "p_no_pcos": 0.09667227058411317,
+      "p_pcos": 0.9033277294158872,
+      "nonconformity_score_for_true_label": 0.09667227058411276,
+      "prediction_set": [
+        1
+      ],
+      "set_size": 1,
+      "covers_true_label": true
+    },
+    {
+      "description": "first holdout patient without PCOS",
+      "holdout_index": 383,
+      "true_label": 0,
+      "p_no_pcos": 0.7288320255422648,
+      "p_pcos": 0.27116797445773455,
+      "nonconformity_score_for_true_label": 0.2711679744577352,
+      "prediction_set": [
+        0
+      ],
+      "set_size": 1,
+      "covers_true_label": true
+    }
+  ]
+}
