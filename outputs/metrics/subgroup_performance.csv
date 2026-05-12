@@ -1,0 +1,61 @@
+model,axis,group,metric,point,ci_lo,ci_hi,n
+screening,age_band,<25,recall,1.0,1.0,1.0,10.0
+screening,age_band,<25,specificity,0.8,0.4,1.0,10.0
+screening,age_band,<25,ppv,0.8333333333333334,0.625,1.0,10.0
+screening,age_band,<25,npv,1.0,1.0,1.0,10.0
+screening,age_band,25-34,recall,0.8484848484848485,0.7272727272727273,0.9696969696969697,86.0
+screening,age_band,25-34,specificity,0.6037735849056604,0.4716981132075472,0.7358490566037735,86.0
+screening,age_band,25-34,ppv,0.5714285714285714,0.49019607843137253,0.675,86.0
+screening,age_band,25-34,npv,0.8648648648648649,0.7666489361702128,0.9687736742424242,86.0
+screening,age_band,35+,recall,1.0,1.0,1.0,40.0
+screening,age_band,35+,specificity,0.7941176470588235,0.6470588235294118,0.9117647058823529,40.0
+screening,age_band,35+,ppv,0.46153846153846156,0.3333333333333333,0.6666666666666666,40.0
+screening,age_band,35+,npv,1.0,1.0,1.0,40.0
+screening,age_band,_summary,max_recall_gap,0.1515151515151515,,,
+screening,bmi_category,underweight (<18.5),recall,1.0,insufficient_n,insufficient_n,9.0
+screening,bmi_category,underweight (<18.5),specificity,0.8571428571428571,insufficient_n,insufficient_n,9.0
+screening,bmi_category,underweight (<18.5),ppv,0.6666666666666666,insufficient_n,insufficient_n,9.0
+screening,bmi_category,underweight (<18.5),npv,1.0,insufficient_n,insufficient_n,9.0
+screening,bmi_category,normal (18.5-25),recall,0.75,0.55,0.9,69.0
+screening,bmi_category,normal (18.5-25),specificity,0.7755102040816326,0.6530612244897959,0.8775510204081632,69.0
+screening,bmi_category,normal (18.5-25),ppv,0.5769230769230769,0.45161290322580644,0.72,69.0
+screening,bmi_category,normal (18.5-25),npv,0.8837209302325582,0.8055386178861789,0.9545707070707071,69.0
+screening,bmi_category,overweight (25-30),recall,1.0,1.0,1.0,47.0
+screening,bmi_category,overweight (25-30),specificity,0.5806451612903226,0.3870967741935484,0.7419354838709677,47.0
+screening,bmi_category,overweight (25-30),ppv,0.5517241379310345,0.45714285714285713,0.6666666666666666,47.0
+screening,bmi_category,overweight (25-30),npv,1.0,1.0,1.0,47.0
+screening,bmi_category,obese (>=30),recall,1.0,1.0,1.0,11.0
+screening,bmi_category,obese (>=30),specificity,0.2,0.0,0.6,11.0
+screening,bmi_category,obese (>=30),ppv,0.6,0.5454545454545454,0.75,11.0
+screening,bmi_category,obese (>=30),npv,1.0,1.0,1.0,11.0
+screening,bmi_category,_summary,max_recall_gap,0.25,,,
+enhanced,age_band,<25,recall,0.8,0.4,1.0,10.0
+enhanced,age_band,<25,specificity,1.0,1.0,1.0,10.0
+enhanced,age_band,<25,ppv,1.0,1.0,1.0,10.0
+enhanced,age_band,<25,npv,0.8333333333333334,0.625,1.0,10.0
+enhanced,age_band,25-34,recall,0.8787878787878788,0.7575757575757576,0.9696969696969697,86.0
+enhanced,age_band,25-34,specificity,0.9245283018867925,0.8490566037735849,0.9811320754716981,86.0
+enhanced,age_band,25-34,ppv,0.8787878787878788,0.7777777777777778,0.967741935483871,86.0
+enhanced,age_band,25-34,npv,0.9245283018867925,0.8596491228070176,0.9807692307692307,86.0
+enhanced,age_band,35+,recall,1.0,1.0,1.0,40.0
+enhanced,age_band,35+,specificity,0.8529411764705882,0.7352941176470589,0.9705882352941176,40.0
+enhanced,age_band,35+,ppv,0.5454545454545454,0.4,0.8571428571428571,40.0
+enhanced,age_band,35+,npv,1.0,1.0,1.0,40.0
+enhanced,age_band,_summary,max_recall_gap,0.19999999999999996,,,
+enhanced,bmi_category,underweight (<18.5),recall,1.0,insufficient_n,insufficient_n,9.0
+enhanced,bmi_category,underweight (<18.5),specificity,1.0,insufficient_n,insufficient_n,9.0
+enhanced,bmi_category,underweight (<18.5),ppv,1.0,insufficient_n,insufficient_n,9.0
+enhanced,bmi_category,underweight (<18.5),npv,1.0,insufficient_n,insufficient_n,9.0
+enhanced,bmi_category,normal (18.5-25),recall,0.8,0.6,0.95,69.0
+enhanced,bmi_category,normal (18.5-25),specificity,0.9795918367346939,0.9387755102040817,1.0,69.0
+enhanced,bmi_category,normal (18.5-25),ppv,0.9411764705882353,0.8124255952380952,1.0,69.0
+enhanced,bmi_category,normal (18.5-25),npv,0.9230769230769231,0.8596491228070176,0.98,69.0
+enhanced,bmi_category,overweight (25-30),recall,0.9375,0.8125,1.0,47.0
+enhanced,bmi_category,overweight (25-30),specificity,0.8064516129032258,0.6451612903225806,0.9354838709677419,47.0
+enhanced,bmi_category,overweight (25-30),ppv,0.7142857142857143,0.5833333333333334,0.8888888888888888,47.0
+enhanced,bmi_category,overweight (25-30),npv,0.9615384615384616,0.88,1.0,47.0
+enhanced,bmi_category,obese (>=30),recall,1.0,1.0,1.0,11.0
+enhanced,bmi_category,obese (>=30),specificity,0.6,0.2,1.0,11.0
+enhanced,bmi_category,obese (>=30),ppv,0.75,0.6,1.0,11.0
+enhanced,bmi_category,obese (>=30),npv,1.0,1.0,1.0,11.0
+enhanced,bmi_category,_summary,max_recall_gap,0.19999999999999996,,,
