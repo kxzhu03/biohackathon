@@ -145,8 +145,52 @@ abstract_body = ParagraphStyle(
 )
 code_style = ParagraphStyle("Code", parent=body_style, fontName="Courier", fontSize=9, leading=12.5)
 
+cell_style = ParagraphStyle(
+    "Cell",
+    parent=body_style,
+    fontSize=8.6,
+    leading=11,
+    alignment=TA_LEFT,
+    spaceAfter=0,
+    spaceBefore=0,
+    wordWrap="CJK",  # break inside long unbreakable tokens (file paths)
+    textColor=BODY_DARK,
+)
+cell_header_style = ParagraphStyle(
+    "CellHeader",
+    parent=cell_style,
+    fontName="Helvetica-Bold",
+    fontSize=8.8,
+    alignment=TA_CENTER,
+    textColor=TABLE_HEADER_TEXT,
+    wordWrap=None,  # short headers should never break inside a word
+)
+path_cell_style = ParagraphStyle(
+    "Path",
+    parent=cell_style,
+    fontName="Courier",
+    fontSize=8.2,
+    leading=10.5,
+)
+
 
 # --- Helpers ----------------------------------------------------------------
+
+
+def cell_para(text: str, style: ParagraphStyle | None = None) -> Paragraph:
+    """Wrap long table-cell text in a Paragraph so reportlab can break it.
+
+    Uses wordWrap='CJK' on the default style, which lets reportlab break inside
+    very long unbreakable tokens (e.g. file paths) when no whitespace is available.
+    """
+    return Paragraph(text, style or cell_style)
+
+
+def _wrap_cell(value, style: ParagraphStyle | None = None, threshold: int = 25):
+    """Auto-wrap a string cell in a Paragraph if it's long; pass through Flowables."""
+    if isinstance(value, str) and len(value) > threshold:
+        return cell_para(value, style)
+    return value
 
 
 def figure(filename: str, caption: str, max_width_cm: float = 14.0):
@@ -192,8 +236,26 @@ def two_figure_row(left_file, left_caption, right_file, right_caption):
     return KeepTogether(t)
 
 
-def styled_table(header, rows, col_widths=None, alt_row_bg=True):
-    data = [header] + rows
+def _prepare_rows(header, rows, wrap_threshold=25, body_cell_style=None):
+    """Wrap header cells (white-on-accent) and body cells (dark) in Paragraphs.
+
+    Long body strings (over threshold) are auto-wrapped so reportlab can break
+    them across lines. Already-Flowable cells are passed through untouched.
+    """
+    body_style_local = body_cell_style or cell_style
+    out_header = [
+        cell_para(c, cell_header_style) if isinstance(c, str) else c for c in header
+    ]
+    out_rows = []
+    for row in rows:
+        out_rows.append([_wrap_cell(c, body_style_local, wrap_threshold) for c in row])
+    return out_header, out_rows
+
+
+def styled_table(header, rows, col_widths=None, alt_row_bg=True, wrap_threshold=25,
+                 valign="MIDDLE"):
+    out_header, out_rows = _prepare_rows(header, rows, wrap_threshold)
+    data = [out_header] + out_rows
     t = Table(data, colWidths=col_widths, repeatRows=1)
     style = [
         ("BACKGROUND", (0, 0), (-1, 0), TABLE_HEADER),
@@ -202,7 +264,7 @@ def styled_table(header, rows, col_widths=None, alt_row_bg=True):
         ("FONTSIZE", (0, 0), (-1, -1), 9),
         ("ALIGN", (0, 0), (-1, 0), "CENTER"),
         ("ALIGN", (0, 1), (-1, -1), "LEFT"),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("VALIGN", (0, 0), (-1, -1), valign),
         ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
         ("TOPPADDING", (0, 0), (-1, 0), 5),
         ("BOTTOMPADDING", (0, 1), (-1, -1), 4),
@@ -221,9 +283,10 @@ def styled_table(header, rows, col_widths=None, alt_row_bg=True):
     return t
 
 
-def numeric_table(header, rows, col_widths=None):
+def numeric_table(header, rows, col_widths=None, wrap_threshold=25):
     """Variant where all data cells are right-aligned for numerics."""
-    data = [header] + rows
+    out_header, out_rows = _prepare_rows(header, rows, wrap_threshold)
+    data = [out_header] + out_rows
     t = Table(data, colWidths=col_widths, repeatRows=1)
     style = [
         ("BACKGROUND", (0, 0), (-1, 0), TABLE_HEADER),
@@ -427,8 +490,9 @@ def build():
     # ---- 3. Data cleaning -------------------------------------------------
     story.append(h1("3. Data Cleaning and Quality Controls"))
     story.append(para(
-        "Cleaning lives in the notebook setup cells generated from "
-        "<font face='Courier'>scripts/create_training_notebooks.mjs</font>. The key steps:"
+        "Cleaning lives in the notebook setup cells generated from the deterministic "
+        "regenerator script (<font face='Courier'>scripts/&#8203;create_&#8203;training_&#8203;notebooks.mjs</font>). "
+        "The key steps:"
     ))
     story.append(bullet("Standardise column names to lowercase snake case; coerce numerics and log every non-numeric cell."))
     story.append(bullet("Drop identifiers (<font face='Courier'>sl_no</font>, <font face='Courier'>patient_file_no</font>)."))
@@ -491,12 +555,13 @@ def build():
     # ---- 5. Validation strategy -------------------------------------------
     story.append(h1("5. Validation Strategy"))
     story.append(para(
-        "A single stratified train/test split with <font face='Courier'>test_size = 0.25</font> and "
-        "<font face='Courier'>random_state = 42</font>. Model selection uses 5-fold stratified cross-validation on "
-        "the <i>training</i> split. For each chosen model, action thresholds are selected using out-of-fold training "
-        "probabilities from <font face='Courier'>cross_val_predict(method=\"predict_proba\")</font>. The threshold sweep "
-        "targets recall &ge; 0.90 on the training out-of-fold predictions while maximising specificity, then "
-        "precision, then F1."
+        "A single stratified train/test split with <font face='Courier'>test_size&#8203;=&#8203;0.25</font> and "
+        "<font face='Courier'>random_state&#8203;=&#8203;42</font>. Model selection uses 5-fold stratified cross-"
+        "validation on the <i>training</i> split. For each chosen model, action thresholds are selected using "
+        "out-of-fold training probabilities from "
+        "<font face='Courier'>cross_val_&#8203;predict(method=&#8203;\"predict_proba\")</font>. "
+        "The threshold sweep targets recall &ge; 0.90 on the training out-of-fold predictions while maximising "
+        "specificity, then precision, then F1."
     ))
     story.append(para(
         "The held-out test set is then evaluated <b>exactly once</b>. This eliminates the earlier risk of choosing a "
@@ -507,13 +572,13 @@ def build():
     story.append(h1("6. Results"))
     story.append(h2("6.1 Held-Out Performance at the Chosen Thresholds"))
     story.append(numeric_table(
-        ["Model", "Threshold", "ROC-AUC", "Recall", "Spec.", "PPV", "NPV", "F2"],
+        ["Model", "Thresh.", "ROC-AUC", "Recall", "Spec.", "PPV", "NPV", "F2"],
         [
             ["Screening", "0.285", "0.896", "0.886", "0.685", "0.574", "0.926", "0.799"],
             ["Enhanced", "0.380", "0.953", "0.886", "0.902", "0.812", "0.943", "0.871"],
             ["Endo (synth.)", "0.510", "0.660", "0.628", "0.618", "0.531", "—", "0.609"],
         ],
-        col_widths=[3.2 * cm, 2.0 * cm, 1.9 * cm, 1.7 * cm, 1.6 * cm, 1.6 * cm, 1.6 * cm, 1.6 * cm],
+        col_widths=[3.0 * cm, 1.7 * cm, 2.0 * cm, 1.7 * cm, 1.6 * cm, 1.6 * cm, 1.6 * cm, 1.6 * cm],
     ))
     story.append(Spacer(1, 0.2 * cm))
     story.append(para(
@@ -543,14 +608,15 @@ def build():
     ))
 
     story.append(numeric_table(
-        ["Model / threshold", "Recall", "Spec.", "PPV", "NPV", "F1", "F2", "(TN, FP, FN, TP)"],
+        ["Model / threshold", "Recall", "Spec.", "PPV", "NPV", "F1", "F2", "TN, FP, FN, TP"],
         [
-            ["Screening, t = 0.285 (chosen)", "0.886", "0.685", "0.574", "0.926", "0.696", "0.799", "(63, 29, 5, 39)"],
-            ["Screening, t = 0.500 (balanced)", "0.795", "0.913", "0.814", "0.903", "0.805", "0.799", "(84, 8, 9, 35)"],
-            ["Enhanced, t = 0.380 (chosen)", "0.886", "0.902", "0.812", "0.943", "0.848", "0.871", "(83, 9, 5, 39)"],
-            ["Enhanced, t = 0.500 (balanced)", "0.818", "0.957", "0.900", "0.917", "0.857", "0.833", "(88, 4, 8, 36)"],
+            ["Screening, t=0.285 (chosen)", "0.886", "0.685", "0.574", "0.926", "0.696", "0.799", "63, 29, 5, 39"],
+            ["Screening, t=0.500 (balanced)", "0.795", "0.913", "0.814", "0.903", "0.805", "0.799", "84, 8, 9, 35"],
+            ["Enhanced, t=0.380 (chosen)", "0.886", "0.902", "0.812", "0.943", "0.848", "0.871", "83, 9, 5, 39"],
+            ["Enhanced, t=0.500 (balanced)", "0.818", "0.957", "0.900", "0.917", "0.857", "0.833", "88, 4, 8, 36"],
         ],
-        col_widths=[5.0 * cm, 1.3 * cm, 1.3 * cm, 1.3 * cm, 1.3 * cm, 1.3 * cm, 1.3 * cm, 3.0 * cm],
+        col_widths=[4.5 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 3.1 * cm],
+        wrap_threshold=20,
     ))
     story.append(Spacer(1, 0.15 * cm))
     story.append(Paragraph("<i>Table 4. Threshold trade-off on the held-out test set.</i>", caption_style))
@@ -649,23 +715,25 @@ def build():
 
     # ---- 12. Reproducible artifacts ---------------------------------------
     story.append(h1("12. Reproducible Artifacts"))
+    artifacts = [
+        ("notebooks/01_pcos_data_audit_and_eda.ipynb", "Loading, cleaning, audit, EDA, processed CSV export."),
+        ("notebooks/02_train_pcos_screening_model.ipynb", "Training, threshold selection, evaluation: screening."),
+        ("notebooks/03_train_pcos_enhanced_model.ipynb", "Training and evaluation: labs/ultrasound model."),
+        ("notebooks/04_train_endometriosis_overlap_model.ipynb", "Synthetic-data differential prompt model."),
+        ("notebooks/05_thresholds_explainability_and_demo.ipynb", "SHAP, held-out demo cases, model card."),
+        ("notebooks/06_single_cell_gene_peek.ipynb", "Lightweight biological-rationale gene-list check."),
+        ("src/app.py", "Streamlit clinician-facing prototype."),
+        ("outputs/models/*.joblib", "Saved model artifacts (with SHAP backgrounds)."),
+        ("outputs/metrics/*", "Held-out metrics, threshold trade-offs, SHAP tables, model card."),
+        ("scripts/create_training_notebooks.mjs", "Deterministic notebook regenerator (source of truth)."),
+        ("report/build_pdf.py", "Reportlab generator for this PDF."),
+        ("PROJECT_PLAN.md, README.md, SUBMISSION.md", "Plan, quickstart, packaging checklist."),
+    ]
     story.append(styled_table(
         ["Artifact", "Purpose"],
-        [
-            ["notebooks/01_pcos_data_audit_and_eda.ipynb", "Loading, cleaning, audit, EDA, processed CSV export."],
-            ["notebooks/02_train_pcos_screening_model.ipynb", "Training, threshold selection, evaluation: screening."],
-            ["notebooks/03_train_pcos_enhanced_model.ipynb", "Training and evaluation: labs/ultrasound model."],
-            ["notebooks/04_train_endometriosis_overlap_model.ipynb", "Synthetic-data differential prompt model."],
-            ["notebooks/05_thresholds_explainability_and_demo.ipynb", "SHAP, held-out demo cases, model card."],
-            ["notebooks/06_single_cell_gene_peek.ipynb", "Lightweight biological-rationale gene-list check."],
-            ["src/app.py", "Streamlit clinician-facing prototype."],
-            ["outputs/models/*.joblib", "Saved model artifacts (with SHAP backgrounds)."],
-            ["outputs/metrics/*", "Held-out metrics, threshold trade-offs, SHAP tables, model card."],
-            ["scripts/create_training_notebooks.mjs", "Deterministic notebook regenerator (source of truth)."],
-            ["report/build_pdf.py", "Reportlab generator for this PDF."],
-            ["PROJECT_PLAN.md, README.md, SUBMISSION.md", "Plan, quickstart, packaging checklist."],
-        ],
-        col_widths=[7 * cm, 9 * cm],
+        [[cell_para(p, path_cell_style), cell_para(d)] for p, d in artifacts],
+        col_widths=[7.4 * cm, 9.2 * cm],
+        valign="TOP",
     ))
 
     # ---- 13. Conclusion ---------------------------------------------------
