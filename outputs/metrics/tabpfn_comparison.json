@@ -1,0 +1,56 @@
+{
+  "screening": {
+    "tabpfn": {
+      "threshold": 0.285,
+      "roc_auc": 0.9053853754940712,
+      "recall": 0.8409090909090909,
+      "specificity": 0.8478260869565217,
+      "f1": 0.7789473684210526,
+      "f2": 0.8149779735682819,
+      "fit_seconds": 1.7938912000099663,
+      "predict_seconds": 4.007897999981651
+    },
+    "random_forest": {
+      "threshold": 0.285,
+      "roc_auc": 0.8955039525691699,
+      "recall": 0.8863636363636364,
+      "specificity": 0.6847826086956522,
+      "f1": 0.6964285714285714,
+      "f2": 0.7991803278688525,
+      "fit_seconds": null,
+      "predict_seconds": 0.02046969998627901
+    },
+    "n_train": 405,
+    "n_test": 136,
+    "n_features": 13
+  },
+  "enhanced": {
+    "tabpfn": {
+      "threshold": 0.38,
+      "roc_auc": 0.9624505928853756,
+      "recall": 0.8409090909090909,
+      "specificity": 0.9456521739130435,
+      "f1": 0.8604651162790697,
+      "f2": 0.8486238532110092,
+      "fit_seconds": 0.8338235999981407,
+      "predict_seconds": 8.595456800016109
+    },
+    "random_forest": {
+      "threshold": 0.38,
+      "roc_auc": 0.9528162055335969,
+      "recall": 0.8863636363636364,
+      "specificity": 0.9021739130434783,
+      "f1": 0.8478260869565217,
+      "f2": 0.8705357142857143,
+      "fit_seconds": null,
+      "predict_seconds": 0.019676299998536706
+    },
+    "n_train": 405,
+    "n_test": 136,
+    "n_features": 27
+  },
+  "device": "cpu",
+  "tabpfn_version": "6.4.1",
+  "notes": "TabPFN-v2 = Hollmann et al., Nature 2025",
+  "status": "ok"
+}
