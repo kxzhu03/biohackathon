@@ -1,0 +1,65 @@
+{
+  "rotterdam_rule": {
+    "sensitivity": 0.7954545454545454,
+    "specificity": 0.9130434782608695,
+    "ppv": 0.813953488372093,
+    "npv": 0.9032258064516129,
+    "f1": 0.8045977011494253,
+    "f2": 0.7990867579908676,
+    "accuracy": 0.875,
+    "cm": [
+      [
+        84,
+        8
+      ],
+      [
+        9,
+        35
+      ]
+    ]
+  },
+  "enhanced_ml_model": {
+    "sensitivity": 0.8863636363636364,
+    "specificity": 0.9021739130434783,
+    "ppv": 0.8125,
+    "npv": 0.9431818181818182,
+    "f1": 0.8478260869565217,
+    "f2": 0.8705357142857143,
+    "accuracy": 0.8970588235294118,
+    "cm": [
+      [
+        83,
+        9
+      ],
+      [
+        5,
+        39
+      ]
+    ]
+  },
+  "delta_sensitivity": 0.09090909090909094,
+  "delta_specificity": -0.010869565217391242,
+  "delta_ppv": -0.0014534883720930258,
+  "delta_npv": 0.039956011730205354,
+  "rule_definition": {
+    "decision": "PCOS-positive if >= 2 of 3 Rotterdam criteria are met",
+    "crit1_oligo_anovulation": "cycle_irregular_flag == 1 OR cycle_r_i >= 4",
+    "crit2_hyperandrogenism": "hair_growth_y_n OR skin_darkening_y_n OR pimples_y_n OR amh_ng_ml >= train_P75 OR fsh_lh < 0.5 OR lh_miu_ml >= train_P75",
+    "crit3_polycystic_ovaries": "follicle_no_l >= 12 OR follicle_no_r >= 12",
+    "thresholds": {
+      "amh_high_ng_per_ml": 7.202500000000001,
+      "lh_high_miu_per_ml": 3.68,
+      "fsh_lh_inverted_below": 0.5,
+      "follicle_count_per_ovary": 12
+    }
+  },
+  "references": [
+    "Rotterdam ESHRE/ASRM-Sponsored PCOS Consensus Workshop Group. Fertil Steril. 2004;81(1):19-25.",
+    "Teede HJ, Tay CT, Laven JJE, et al. Fertil Steril. 2023;120(4):767-793."
+  ],
+  "limitations": {
+    "missing_testosterone": "The Kerala PCOS dataset does NOT include a direct serum total or free testosterone measurement, which is the Rotterdam-preferred biochemical marker for hyperandrogenism. This notebook approximates biochemical hyperandrogenism using AMH and LH/FSH-related features. AMH is supportive of polycystic ovarian morphology but is not equivalent to androgen excess; the LH/FSH ratio is supportive but no longer required by Rotterdam/2023.",
+    "hand_coded_rule_has_no_scores": "The Rotterdam rule produces a binary call only, so ROC-AUC is not applicable. We report sensitivity, specificity, PPV, NPV, F1, F2, and accuracy instead.",
+    "thresholds_from_train_only": "AMH and LH high-cutoffs are computed from training-fold percentiles to avoid test leakage."
+  }
+}

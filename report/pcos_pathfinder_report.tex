@@ -107,7 +107,7 @@ The supplementary endometriosis dataset has seven variables: age, menstrual irre
 
 \section{Data Cleaning and Quality Controls}
 
-Data cleaning is implemented in the notebook setup cells generated from \code{scripts/create\_training\_notebooks.mjs}. The key steps:
+Data cleaning is implemented in the notebook setup cells generated from the deterministic regenerator script (\code{scripts/create\_training\_notebooks.mjs}). The key steps:
 
 \begin{itemize}
   \item Load the \code{Full\_new} sheet; standardise names to lowercase snake case.
@@ -178,9 +178,9 @@ Both PCOS notebooks compare four models: a most-frequent dummy baseline, logisti
 
 \section{Validation Strategy}
 
-A single stratified train/test split is used with \code{test\_size = 0.25} and \code{random\_state = 42}. Model selection uses 5-fold stratified cross-validation \emph{on the training split}. For each chosen model, action thresholds are selected using out-of-fold training probabilities from \code{cross\_val\_predict(method="predict\_proba")}. The threshold sweep targets recall $\geq 0.90$ on the training out-of-fold predictions while maximising specificity, then precision, then F1.
+A single stratified train/test split with \code{test\_size=0.25} and \code{random\_state=42}. Model selection uses 5-fold stratified cross-validation on the \emph{training} split. For each chosen model, action thresholds are selected using out-of-fold training probabilities from \code{cross\_val\_predict(method="predict\_proba")}. The threshold sweep targets recall $\geq 0.90$ on the training out-of-fold predictions while maximising specificity, then precision, then F1.
 
-The held-out test set is then evaluated exactly once. This avoids the earlier risk of choosing a threshold on the test set and reporting optimistic metrics.
+The held-out test set is then evaluated \textbf{exactly once}. This eliminates the earlier risk of choosing a threshold on the test set and reporting optimistic metrics.
 
 \section{Results}
 

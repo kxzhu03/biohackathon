@@ -1,0 +1,392 @@
+{
+  "screening": {
+    "model_name": "random_forest",
+    "threshold": 0.285,
+    "holdout_size": 136,
+    "axes": {
+      "age_band": {
+        "<25": {
+          "n_in_subgroup": 10,
+          "n_positive": 5,
+          "n_negative": 5,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.8,
+            "ci_lo": 0.4,
+            "ci_hi": 1.0
+          },
+          "ppv": {
+            "point": 0.8333333333333334,
+            "ci_lo": 0.625,
+            "ci_hi": 1.0
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "25-34": {
+          "n_in_subgroup": 86,
+          "n_positive": 33,
+          "n_negative": 53,
+          "recall": {
+            "point": 0.8484848484848485,
+            "ci_lo": 0.7272727272727273,
+            "ci_hi": 0.9696969696969697
+          },
+          "specificity": {
+            "point": 0.6037735849056604,
+            "ci_lo": 0.4716981132075472,
+            "ci_hi": 0.7358490566037735
+          },
+          "ppv": {
+            "point": 0.5714285714285714,
+            "ci_lo": 0.49019607843137253,
+            "ci_hi": 0.675
+          },
+          "npv": {
+            "point": 0.8648648648648649,
+            "ci_lo": 0.7666489361702128,
+            "ci_hi": 0.9687736742424242
+          }
+        },
+        "35+": {
+          "n_in_subgroup": 40,
+          "n_positive": 6,
+          "n_negative": 34,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.7941176470588235,
+            "ci_lo": 0.6470588235294118,
+            "ci_hi": 0.9117647058823529
+          },
+          "ppv": {
+            "point": 0.46153846153846156,
+            "ci_lo": 0.3333333333333333,
+            "ci_hi": 0.6666666666666666
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "_summary": {
+          "max_recall_gap": 0.1515151515151515,
+          "n_subgroups_with_recall": 3
+        }
+      },
+      "bmi_category": {
+        "underweight (<18.5)": {
+          "n_in_subgroup": 9,
+          "n_positive": 2,
+          "n_negative": 7,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "specificity": {
+            "point": 0.8571428571428571,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "ppv": {
+            "point": 0.6666666666666666,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "ci_note": "n<10"
+        },
+        "normal (18.5-25)": {
+          "n_in_subgroup": 69,
+          "n_positive": 20,
+          "n_negative": 49,
+          "recall": {
+            "point": 0.75,
+            "ci_lo": 0.55,
+            "ci_hi": 0.9
+          },
+          "specificity": {
+            "point": 0.7755102040816326,
+            "ci_lo": 0.6530612244897959,
+            "ci_hi": 0.8775510204081632
+          },
+          "ppv": {
+            "point": 0.5769230769230769,
+            "ci_lo": 0.45161290322580644,
+            "ci_hi": 0.72
+          },
+          "npv": {
+            "point": 0.8837209302325582,
+            "ci_lo": 0.8055386178861789,
+            "ci_hi": 0.9545707070707071
+          }
+        },
+        "overweight (25-30)": {
+          "n_in_subgroup": 47,
+          "n_positive": 16,
+          "n_negative": 31,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.5806451612903226,
+            "ci_lo": 0.3870967741935484,
+            "ci_hi": 0.7419354838709677
+          },
+          "ppv": {
+            "point": 0.5517241379310345,
+            "ci_lo": 0.45714285714285713,
+            "ci_hi": 0.6666666666666666
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "obese (>=30)": {
+          "n_in_subgroup": 11,
+          "n_positive": 6,
+          "n_negative": 5,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.2,
+            "ci_lo": 0.0,
+            "ci_hi": 0.6
+          },
+          "ppv": {
+            "point": 0.6,
+            "ci_lo": 0.5454545454545454,
+            "ci_hi": 0.75
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "_summary": {
+          "max_recall_gap": 0.25,
+          "n_subgroups_with_recall": 4
+        }
+      }
+    }
+  },
+  "enhanced": {
+    "model_name": "random_forest",
+    "threshold": 0.38,
+    "holdout_size": 136,
+    "axes": {
+      "age_band": {
+        "<25": {
+          "n_in_subgroup": 10,
+          "n_positive": 5,
+          "n_negative": 5,
+          "recall": {
+            "point": 0.8,
+            "ci_lo": 0.4,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "ppv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "npv": {
+            "point": 0.8333333333333334,
+            "ci_lo": 0.625,
+            "ci_hi": 1.0
+          }
+        },
+        "25-34": {
+          "n_in_subgroup": 86,
+          "n_positive": 33,
+          "n_negative": 53,
+          "recall": {
+            "point": 0.8787878787878788,
+            "ci_lo": 0.7575757575757576,
+            "ci_hi": 0.9696969696969697
+          },
+          "specificity": {
+            "point": 0.9245283018867925,
+            "ci_lo": 0.8490566037735849,
+            "ci_hi": 0.9811320754716981
+          },
+          "ppv": {
+            "point": 0.8787878787878788,
+            "ci_lo": 0.7777777777777778,
+            "ci_hi": 0.967741935483871
+          },
+          "npv": {
+            "point": 0.9245283018867925,
+            "ci_lo": 0.8596491228070176,
+            "ci_hi": 0.9807692307692307
+          }
+        },
+        "35+": {
+          "n_in_subgroup": 40,
+          "n_positive": 6,
+          "n_negative": 34,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.8529411764705882,
+            "ci_lo": 0.7352941176470589,
+            "ci_hi": 0.9705882352941176
+          },
+          "ppv": {
+            "point": 0.5454545454545454,
+            "ci_lo": 0.4,
+            "ci_hi": 0.8571428571428571
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "_summary": {
+          "max_recall_gap": 0.19999999999999996,
+          "n_subgroups_with_recall": 3
+        }
+      },
+      "bmi_category": {
+        "underweight (<18.5)": {
+          "n_in_subgroup": 9,
+          "n_positive": 2,
+          "n_negative": 7,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "specificity": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "ppv": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": "insufficient_n",
+            "ci_hi": "insufficient_n"
+          },
+          "ci_note": "n<10"
+        },
+        "normal (18.5-25)": {
+          "n_in_subgroup": 69,
+          "n_positive": 20,
+          "n_negative": 49,
+          "recall": {
+            "point": 0.8,
+            "ci_lo": 0.6,
+            "ci_hi": 0.95
+          },
+          "specificity": {
+            "point": 0.9795918367346939,
+            "ci_lo": 0.9387755102040817,
+            "ci_hi": 1.0
+          },
+          "ppv": {
+            "point": 0.9411764705882353,
+            "ci_lo": 0.8124255952380952,
+            "ci_hi": 1.0
+          },
+          "npv": {
+            "point": 0.9230769230769231,
+            "ci_lo": 0.8596491228070176,
+            "ci_hi": 0.98
+          }
+        },
+        "overweight (25-30)": {
+          "n_in_subgroup": 47,
+          "n_positive": 16,
+          "n_negative": 31,
+          "recall": {
+            "point": 0.9375,
+            "ci_lo": 0.8125,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.8064516129032258,
+            "ci_lo": 0.6451612903225806,
+            "ci_hi": 0.9354838709677419
+          },
+          "ppv": {
+            "point": 0.7142857142857143,
+            "ci_lo": 0.5833333333333334,
+            "ci_hi": 0.8888888888888888
+          },
+          "npv": {
+            "point": 0.9615384615384616,
+            "ci_lo": 0.88,
+            "ci_hi": 1.0
+          }
+        },
+        "obese (>=30)": {
+          "n_in_subgroup": 11,
+          "n_positive": 6,
+          "n_negative": 5,
+          "recall": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          },
+          "specificity": {
+            "point": 0.6,
+            "ci_lo": 0.2,
+            "ci_hi": 1.0
+          },
+          "ppv": {
+            "point": 0.75,
+            "ci_lo": 0.6,
+            "ci_hi": 1.0
+          },
+          "npv": {
+            "point": 1.0,
+            "ci_lo": 1.0,
+            "ci_hi": 1.0
+          }
+        },
+        "_summary": {
+          "max_recall_gap": 0.19999999999999996,
+          "n_subgroups_with_recall": 4
+        }
+      }
+    }
+  }
+}
