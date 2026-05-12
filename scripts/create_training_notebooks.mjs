@@ -1378,24 +1378,38 @@ inventory
 
 const readme = `# Training Notebooks
 
-Run order:
+Thirteen notebooks. The first six are deterministically regenerated from \`scripts/create_training_notebooks.mjs\`; notebooks 07-13 are nbformat-built standalone analyses that depend on the saved artifacts from 02 and 03.
+
+## Run order
+
+**Base pipeline (notebooks 01-06 are generated from the .mjs):**
 
 1. \`01_pcos_data_audit_and_eda.ipynb\` - load, clean, audit, save processed CSV.
 2. \`02_train_pcos_screening_model.ipynb\` - low-cost primary-care screening model.
 3. \`03_train_pcos_enhanced_model.ipynb\` - diagnostic-support model with labs and ultrasound.
 4. \`04_train_endometriosis_overlap_model.ipynb\` - differential-diagnosis prompt (synthetic data).
-5. \`05_thresholds_explainability_and_demo.ipynb\` - SHAP, holdout demo cases, model card.
-6. \`06_single_cell_gene_peek.ipynb\` - optional biological rationale slide.
+5. \`05_thresholds_explainability_and_demo.ipynb\` - SHAP, held-out demo cases, model card.
+6. \`06_single_cell_gene_peek.ipynb\` - optional biological-rationale gene-list check.
 
-Outputs land in:
+**Methodology rigor layer (independent, run after 02/03):**
 
-- \`outputs/figures/\` - plots used in the deck.
-- \`outputs/metrics/\` - CSV and JSON metric exports.
-- \`outputs/models/\` - joblib model artifacts.
+7. \`07_uncertainty_quantification.ipynb\` - bootstrap 95% CIs and paired AUC-difference test.
+8. \`08_calibration_analysis.ipynb\` - Brier, ECE, Platt and isotonic recalibration.
+9. \`09_decision_curve_analysis.ipynb\` - net-benefit curves vs treat-all / treat-none baselines.
+10. \`10_tabpfn_benchmark.ipynb\` - TabPFN-v2 (Hollmann et al., Nature 2025) vs Random Forest.
+11. \`11_subgroup_fairness.ipynb\` - recall by age band and BMI category with bootstrap CIs.
+12. \`12_conformal_prediction.ipynb\` - split-conformal prediction sets with empirical-coverage check.
+13. \`13_rotterdam_alignment.ipynb\` - hand-coded Rotterdam 2-of-3 rule vs enhanced ML (Teede et al., Fertil Steril 2023).
+
+## Outputs
+
+- \`outputs/figures/\` - plots used in the deck and the technical report.
+- \`outputs/metrics/\` - CSV and JSON metric exports (bootstrap CIs, calibration, DCA, fairness, conformal coverage, Rotterdam comparison, TabPFN benchmark).
+- \`outputs/models/\` - joblib model artifacts (with SHAP backgrounds).
 
 They expect either the extracted files in \`_read_extract/\` or the original \`OneDrive_1_5-11-2026.zip\` in the project root.
 
-Install dependencies with:
+## Install
 
 \`\`\`bash
 pip install -r requirements.txt
@@ -1419,6 +1433,10 @@ nbconvert==7.17.0
 reportlab==4.4.9
 pillow==10.3.0
 pypdf==4.0.0
+pymupdf==1.24.0
+# TabPFN-v2 (Hollmann et al., Nature 2025) - pinned <7 to use open-weights
+# checkpoint that does not require the browser-based license token.
+tabpfn<7
 `;
 
 const files = [

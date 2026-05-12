@@ -15,3 +15,7 @@ nbconvert==7.17.0
 reportlab==4.4.9
 pillow==10.3.0
 pypdf==4.0.0
+pymupdf==1.24.0
+# TabPFN-v2 (Hollmann et al., Nature 2025) - pinned <7 to use open-weights
+# checkpoint that does not require the browser-based license token.
+tabpfn<7

@@ -932,9 +932,33 @@ By submission, the project should have:
 - Global and patient-level SHAP explanations (notebook 05). ✓
 - A differential-diagnosis prompt module using the synthetic endometriosis dataset (notebook 04). ✓
 - A single-cell biological-rationale peek (notebook 06). ✓
+- **Bootstrap 95% CIs on every held-out metric + paired AUC-difference test** (notebook 07). ✓
+- **Calibration (Brier, ECE, Platt, isotonic)** (notebook 08). ✓
+- **Decision Curve Analysis with net-benefit useful ranges** (notebook 09). ✓
+- **TabPFN-v2 benchmark vs Random Forest** (notebook 10). ✓
+- **Subgroup fairness audit by age and BMI with bootstrap CIs** (notebook 11). ✓
+- **Split-conformal prediction with empirical-coverage check** (notebook 12). ✓
+- **Rotterdam clinical-rule benchmark** (notebook 13). ✓
 - A working Streamlit prototype that loads all three model artifacts (`src/app.py`). ✓
+- A 15-page technical report PDF with cited recent literature (`report/pcos_pathfinder_report.pdf`). ✓
 - A project-root README and an updated PROJECT_PLAN. ✓
 - A persuasive slide deck aligned to the judging criteria. (drafted in this plan; deck to follow)
+
+## Methodology Rigor Upgrades
+
+Seven analyses were added on top of the base pipeline to align the submission with TRIPOD+AI 2024 reporting standards and contemporary clinical-ML best practice. Each is independently reproducible from a numbered notebook and is summarised in the technical report (`report/pcos_pathfinder_report.pdf`).
+
+| # | Notebook | Analysis | Recent reference |
+|---|---|---|---|
+| 07 | `07_uncertainty_quantification.ipynb` | 2000-resample bootstrap 95% CIs on every held-out metric; paired AUC-difference test (enhanced vs screening: ΔAUC=+0.057, 95% CI [+0.013, +0.105], p≈0.015). | Collins et al., *BMJ* 2024 (TRIPOD+AI) |
+| 08 | `08_calibration_analysis.ipynb` | Brier, ECE, Platt and isotonic recalibration on a held-out 122-row calibration slice. Enhanced model: Brier 0.093→0.072, ECE 0.143→0.045. | Van Calster et al., *BMC Med* 2019 |
+| 09 | `09_decision_curve_analysis.ipynb` | Net-benefit curves vs treat-all / treat-none. Screening useful range [0.020, 0.885]; enhanced [0.010, 0.960]; both action thresholds inside their useful range. | Vickers & Elkin 2006; Vickers et al., *BMJ* 2016 |
+| 10 | `10_tabpfn_benchmark.ipynb` | TabPFN-v2 (transformer foundation model for small tabular data) vs Random Forest on the same split, features, and thresholds. TabPFN: screening AUC 0.905, enhanced AUC 0.962 (vs RF 0.896 / 0.953). | Hollmann et al., *Nature* 2025 |
+| 11 | `11_subgroup_fairness.ipynb` | Recall stratified by age band and BMI category, with 1000-bootstrap CIs per subgroup. **Honest finding:** 25-point BMI recall gap in screening (lowest in normal-BMI band), narrowing to 20 points in enhanced. | Obermeyer et al., *Science* 2019 |
+| 12 | `12_conformal_prediction.ipynb` | Split-conformal prediction sets with distribution-free coverage guarantee. Target 0.90, empirical 0.912 on holdout; mean set size 0.99. | Angelopoulos & Bates, *Found. Trends ML* 2023 |
+| 13 | `13_rotterdam_alignment.ipynb` | Hand-coded Rotterdam 2-of-3 clinical rule vs enhanced ML on the same holdout. ML adds 9.1 pts sensitivity for 1.1 pts specificity cost. | Rotterdam 2003; Teede et al., *Fertil Steril* 2023 |
+
+All seven were implemented in parallel git worktrees as part of a single `/batch` orchestration, then integrated on the `feat-integration` branch.
 
 ## Final Recommendation
 
