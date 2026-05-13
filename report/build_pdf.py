@@ -595,7 +595,7 @@ def build():
             ["PPV (precision)", "0.574 [0.451, 0.698]", "0.812 [0.700, 0.917]"],
             ["NPV", "0.926 [0.857, 0.985]", "0.943 [0.889, 0.987]"],
             ["F1", "0.696 [0.585, 0.789]", "0.848 [0.766, 0.917]"],
-            ["F2", "0.799 [0.706, 0.880]", "0.871 [0.804, 0.929]"],
+            ["F2", "0.799 [0.707, 0.878]", "0.871 [0.783, 0.940]"],
         ],
         col_widths=[5.0 * cm, 5.5 * cm, 5.5 * cm],
     ))
@@ -830,7 +830,8 @@ def build():
         "TabPFN beats Random Forest on AUC and F1 for both feature sets, though it trades a small amount of "
         "recall (0.84 vs 0.89 at the high-recall threshold) for substantially higher specificity. We keep the "
         "Random Forest as the deployed model because its higher recall aligns with the screening-first philosophy "
-        "and because TabPFN inference is ~200&times; slower (~8s per prediction vs ~20ms). The result is a "
+        "and because TabPFN inference is ~430&times; slower on this hardware (~8.6 s vs ~20 ms for the full "
+        "136-patient holdout on CPU). The result is a "
         "first-order sanity check that no obvious headroom is being left on the table by the chosen algorithm."
     ))
     story.append(figure(
@@ -1006,7 +1007,7 @@ def build():
         "Van Calster B, McLernon DJ, van Smeden M, et al. <b>Calibration: the Achilles heel of predictive analytics.</b> <i>BMC Medicine</i> 2019;17:230.",
         "Vickers AJ, Elkin EB. <b>Decision curve analysis: a novel method for evaluating prediction models.</b> <i>Med Decis Making</i> 2006;26(6):565-574.",
         "Vickers AJ, Van Calster B, Steyerberg EW. <b>Net benefit approaches to the evaluation of prediction models, molecular markers, and diagnostic tests.</b> <i>BMJ</i> 2016;352:i6.",
-        "Hollmann N, Müller S, Eggensperger K, et al. <b>Accurate predictions on small data with a tabular foundation model.</b> <i>Nature</i> 2025;637:319-326. (TabPFN-v2)",
+        "Hollmann N, Müller S, Purucker L, et al. <b>Accurate predictions on small data with a tabular foundation model.</b> <i>Nature</i> 2025;637(8045):319-326. (TabPFN-v2)",
         "Angelopoulos AN, Bates S. <b>Conformal Prediction: A Gentle Introduction.</b> <i>Foundations and Trends in Machine Learning</i> 2023;16(4):494-591.",
         "Obermeyer Z, Powers B, Vogeli C, Mullainathan S. <b>Dissecting racial bias in an algorithm used to manage the health of populations.</b> <i>Science</i> 2019;366(6464):447-453.",
         "Rotterdam ESHRE/ASRM-Sponsored PCOS Consensus Workshop Group. <b>Revised 2003 consensus on diagnostic criteria and long-term health risks related to polycystic ovary syndrome (PCOS).</b> <i>Fertil Steril</i> 2004;81(1):19-25.",
