@@ -39,6 +39,7 @@ Biohackathon 2026 submission package for **PCOS Pathfinder**.
 - Editor / OS junk (`.vscode/`, `.idea/`, `.DS_Store`).
 - Notebook checkpoints (`.ipynb_checkpoints/`).
 - The `.claude/` directory and its worktrees.
+- Report page-preview scratch output (`report/_pages_preview/`).
 
 The provided `.gitignore` covers all of the above.
 

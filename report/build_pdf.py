@@ -417,9 +417,9 @@ def build():
         "selected from out-of-fold training probabilities (no test leakage), risk tiers are anchored to each "
         "model's action threshold, and patient-level SHAP attributions are provided for both PCOS models. On the "
         "held-out test split the enhanced model reaches ROC-AUC <b>0.953</b> (95% CI [0.911, 0.985]) with recall "
-        "0.886 and specificity 0.902; a paired bootstrap test shows the enhanced model significantly beats the "
-        "screening model in AUC (&Delta;=+0.057, 95% CI [+0.013, +0.105], p&asymp;0.015). The methodology layer "
-        "adds bootstrap confidence intervals (TRIPOD+AI 2024), Platt &amp; isotonic calibration with Brier/ECE, "
+        "0.886 and specificity 0.902; a paired bootstrap test puts the enhanced-vs-screening difference at "
+        "&Delta;AUC=+0.057, 95% CI [+0.013, +0.105], p&asymp;0.015 on this held-out split. The methodology layer "
+        "adds bootstrap confidence intervals (TRIPOD+AI-style reporting), Platt &amp; isotonic calibration with Brier/ECE, "
         "decision-curve analysis (Vickers &amp; Elkin), subgroup fairness audits, split-conformal prediction "
         "intervals (Angelopoulos &amp; Bates 2023), a TabPFN-v2 transformer-foundation-model benchmark (Hollmann "
         "et al., <i>Nature</i> 2025), and a Rotterdam-criteria clinical-rule benchmark (Teede et al. 2023). The "
@@ -441,7 +441,7 @@ def build():
     story.append(Spacer(1, 0.4 * cm))
     story.append(Paragraph(
         "<i>Held-out test split (n=136) at CV-selected high-recall thresholds. Numbers in brackets are 95% "
-        "percentile bootstrap CIs (2000 resamples). The enhanced model significantly beats screening on AUC "
+        "percentile bootstrap CIs (2000 resamples). The enhanced-vs-screening AUC difference on this split is "
         "(&Delta;=+0.057, 95% CI [+0.013, +0.105], p&asymp;0.015). F1 is deliberately suppressed by the "
         "high-recall threshold &mdash; see &sect;6.2.</i>",
         meta_style,
@@ -581,9 +581,10 @@ def build():
     story.append(h1("6. Results"))
     story.append(h2("6.1 Held-Out Performance with Bootstrap 95% CIs"))
     story.append(para(
-        "Point estimates alone are inadequate for clinical-ML papers under TRIPOD+AI 2024 (Collins et al., BMJ "
-        "2024). Every cell below is therefore accompanied by a 95% percentile confidence interval from 2000 "
-        "bootstrap resamples of the held-out set (notebook 07)."
+        "Point estimates alone are weak evidence for clinical-prediction work; the TRIPOD+AI 2024 reporting "
+        "guidance (Collins et al., BMJ 2024) recommends interval estimates throughout. Every cell below is "
+        "therefore accompanied by a 95% percentile confidence interval from 2000 bootstrap resamples of the "
+        "held-out set (notebook 07)."
     ))
     story.append(numeric_table(
         ["Metric", "Screening (95% CI)", "Enhanced (95% CI)"],
@@ -605,10 +606,11 @@ def build():
     ))
     story.append(para(
         "A <b>paired</b> bootstrap test on the same 2000 resamples gives <b>&Delta;AUC = +0.057 in favour of "
-        "enhanced (95% CI [+0.013, +0.105], SE = 0.023, two-sided p &asymp; 0.015)</b> &mdash; the enhanced "
-        "model is statistically significantly better, not merely numerically better. NPV is 0.926 for screening "
-        "and 0.943 for enhanced &mdash; when either model says \"no PCOS\", it is right &gt;92% of the time, "
-        "which is the right framing for ruling-out triage."
+        "enhanced (95% CI [+0.013, +0.105], SE = 0.023, two-sided p &asymp; 0.015)</b> on this held-out split. "
+        "We frame this as evidence that the enhanced model appears better on this cohort, not as a deployment-ready "
+        "significance claim &mdash; the cohort is small (n=541), single-source, and external validation is still "
+        "required. NPV is 0.926 for screening and 0.943 for enhanced &mdash; when either model says \"no PCOS\", "
+        "it is right &gt;92% of the time, which is the right framing for ruling-out triage."
     ))
     story.append(figure(
         "auc_bootstrap_distribution.png",
@@ -988,7 +990,7 @@ def build():
     story.append(para(
         "PCOS Pathfinder is not an automated diagnosis. It is a practical, explainable, tiered workflow that "
         "(a) identifies high-risk patients earlier with recall &ge; 0.88 and NPV &ge; 0.93; (b) demonstrates a "
-        "statistically significant AUC improvement of the enhanced over the screening model (&Delta;=+0.057, "
+        "AUC improvement of the enhanced over the screening model on this split (&Delta;=+0.057, "
         "p&asymp;0.015); (c) ships calibrated probabilities, conformal coverage guarantees, decision-curve "
         "utility, subgroup fairness numbers, a recent-SOTA TabPFN benchmark, and a Rotterdam clinical-rule "
         "benchmark; (d) flags its own equity limitations honestly. The cleaning rules, threshold strategy, and "

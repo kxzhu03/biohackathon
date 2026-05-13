@@ -15,6 +15,7 @@ venv/
 
 # Notebook checkpoints and editor temp files
 .ipynb_checkpoints/
+report/_pages_preview/
 .DS_Store
 *.swp
 *~
@@ -25,3 +26,4 @@ venv/
 # OS / IDE
 .vscode/
 .idea/
+.claude/

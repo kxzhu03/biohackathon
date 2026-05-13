@@ -250,6 +250,61 @@ def render_endo_flag(artifact: dict, row: dict) -> None:
         )
 
 
+def render_diagnostic_checklist(row: dict) -> None:
+    """Render Rotterdam-style completeness and safety checks for the demo UI."""
+    ovulatory_dysfunction = row["cycle_irregular_flag"] == 1
+    clinical_hyperandrogenism = bool(
+        row["hair_growth_y_n"] or row["pimples_y_n"] or row["hair_loss_y_n"]
+    )
+    ultrasound_pattern = bool(row["follicle_no_l"] >= 12 or row["follicle_no_r"] >= 12)
+    metabolic_context = bool(
+        row["bmi"] >= 25
+        or row["rbs_mg_dl"] >= 140
+        or row["bp_systolic_mmhg"] >= 130
+        or row["bp_diastolic_mmhg"] >= 80
+    )
+
+    st.markdown("### Diagnostic completeness and safety checks")
+    st.caption(
+        "Workflow checklist for discussion, not a formal diagnosis. "
+        "The source dataset does not include testosterone, so biochemical hyperandrogenism remains a missing test."
+    )
+
+    checklist = pd.DataFrame(
+        [
+            {
+                "check": "Ovulatory dysfunction signal",
+                "status": "Present" if ovulatory_dysfunction else "Not evident",
+                "entered evidence": "Irregular cycle pattern" if ovulatory_dysfunction else "Regular cycle pattern",
+            },
+            {
+                "check": "Clinical hyperandrogenism signal",
+                "status": "Present" if clinical_hyperandrogenism else "Not evident",
+                "entered evidence": "Hirsutism/acne/hair-loss symptom entered"
+                if clinical_hyperandrogenism
+                else "No hyperandrogenic symptom entered",
+            },
+            {
+                "check": "Polycystic-ovary morphology prompt",
+                "status": "Present" if ultrasound_pattern else "Not evident",
+                "entered evidence": f"Follicle counts L/R: {row['follicle_no_l']}/{row['follicle_no_r']}",
+            },
+            {
+                "check": "Metabolic follow-up prompt",
+                "status": "Consider" if metabolic_context else "No immediate prompt",
+                "entered evidence": f"BMI {row['bmi']:.1f}, RBS {row['rbs_mg_dl']}, BP {row['bp_systolic_mmhg']}/{row['bp_diastolic_mmhg']}",
+            },
+        ]
+    )
+    st.dataframe(checklist, use_container_width=True, hide_index=True)
+
+    if 18.5 <= row["bmi"] < 25:
+        st.warning(
+            "Fairness note: validation found lower screening recall in the normal-BMI subgroup. "
+            "Do not rule out lean PCOS solely from a low screening probability when symptoms persist."
+        )
+
+
 def render_population_view(artifacts: dict) -> None:
     """Show the cohort-level signals captured in outputs/metrics."""
     st.subheader("Population view (source cohort)")
@@ -302,6 +357,8 @@ def main() -> None:
                 artifacts["enhanced"],
                 row,
             )
+            st.divider()
+            render_diagnostic_checklist(row)
             st.divider()
             render_endo_flag(artifacts["endo"], row)
             st.divider()

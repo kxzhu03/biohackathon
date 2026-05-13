@@ -17,6 +17,7 @@
 \usepackage{titlesec}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multirow}
 \usepackage{fancyhdr}
 
 \graphicspath{{../outputs/figures/}}
@@ -63,7 +64,7 @@ for Earlier PCOS Detection and Differential Diagnosis}
 \thispagestyle{fancy}
 
 \begin{abstract}
-\noindent PCOS Pathfinder is a data-grounded clinical decision-support prototype for earlier identification of Polycystic Ovary Syndrome (PCOS) and broader differential workup in women's health. The system anchors on the required PCOS clinical dataset (n=541, Kerala, India), layers a synthetic endometriosis-overlap module for differential reasoning, and uses a lightweight single-cell gene-list check for biological rationale. The delivered artifacts are six reproducible notebooks, three saved scikit-learn models, a Streamlit clinician interface, exported metrics and figures, and this report. Thresholds are selected from out-of-fold training probabilities (no test leakage), risk tiers are anchored to each model's action threshold, and patient-level SHAP attributions are provided for both PCOS models. On the held-out test split the enhanced model reaches ROC-AUC 0.953 with recall 0.886 and specificity 0.902. The system is framed throughout as decision support, not standalone diagnosis.
+\noindent PCOS Pathfinder is a data-grounded clinical decision-support prototype for earlier identification of Polycystic Ovary Syndrome (PCOS) and broader differential workup in women's health. The system anchors on the required PCOS clinical dataset (n=541, Kerala, India), layers a synthetic endometriosis-overlap module for differential reasoning, and uses a lightweight single-cell gene-list check for biological rationale. The delivered artifacts are thirteen reproducible notebooks, three saved scikit-learn models, a Streamlit clinician interface, exported metrics and figures, and this report. Thresholds are selected from out-of-fold training probabilities (no test leakage), risk tiers are anchored to each model's action threshold, and patient-level SHAP attributions are provided for both PCOS models. On the held-out test split the enhanced model reaches ROC-AUC 0.953 with recall 0.886 and specificity 0.902. The system is framed throughout as decision support, not standalone diagnosis.
 \end{abstract}
 
 \section{Challenge Context and Project Goal}
@@ -181,6 +182,42 @@ Both PCOS notebooks compare four models: a most-frequent dummy baseline, logisti
 A single stratified train/test split with \code{test\_size=0.25} and \code{random\_state=42}. Model selection uses 5-fold stratified cross-validation on the \emph{training} split. For each chosen model, action thresholds are selected using out-of-fold training probabilities from \code{cross\_val\_predict(method="predict\_proba")}. The threshold sweep targets recall $\geq 0.90$ on the training out-of-fold predictions while maximising specificity, then precision, then F1.
 
 The held-out test set is then evaluated \textbf{exactly once}. This eliminates the earlier risk of choosing a threshold on the test set and reporting optimistic metrics.
+
+\section{Methodology Rigor Layer}
+
+The base modelling pipeline is deliberately compact, but the submission adds a separate validation layer to make the clinical claims harder to dismiss. Each check is reproducible from a numbered notebook and is reported as evidence, not decoration.
+
+\begin{table}[H]
+\centering
+\caption{Rigor analyses added beyond base model training}
+\small
+\begin{tabularx}{\linewidth}{p{0.13\linewidth}p{0.32\linewidth}X}
+\toprule
+Notebook & Analysis & What it adds to the submission \\
+\midrule
+07 & Bootstrap uncertainty & 2000-resample confidence intervals on every held-out metric; paired AUC comparison suggests the enhanced model improves AUC by $\Delta=+0.057$ (95\% CI $[+0.013,+0.105]$, $p\approx0.015$). \\
+08 & Calibration & Brier score and expected calibration error before and after Platt/isotonic recalibration. Platt scaling improves enhanced Brier from 0.093 to 0.072 and ECE from 0.143 to 0.045. \\
+09 & Decision Curve Analysis & Net-benefit curves versus treat-all and treat-none baselines; both chosen action thresholds sit inside useful threshold ranges. \\
+10 & TabPFN benchmark & A contemporary small-tabular foundation model reaches similar AUC, but the random forest keeps better recall/F2 at the selected clinical threshold and is simpler to deploy. \\
+11 & Subgroup fairness audit & Recall is stratified by age band and BMI category with bootstrap intervals. The screening model has a 25-point BMI recall gap, flagged as a deployment risk. \\
+12 & Conformal prediction & Split-conformal prediction sets target 90\% coverage and achieve 0.912 empirical coverage on holdout; empty sets are treated as abstentions requiring clinician review. \\
+13 & Rotterdam alignment & A hand-coded Rotterdam-style 2-of-3 comparator is benchmarked on the same holdout. The enhanced ML model adds 9.1 points sensitivity at a 1.1 point specificity cost, with the caveat that testosterone is unavailable. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\linewidth}
+  \includegraphics[width=\linewidth]{calibration_combined.png}
+  \caption{Calibration before and after recalibration.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\linewidth}
+  \includegraphics[width=\linewidth]{dca_combined.png}
+  \caption{Decision curve net benefit.}
+\end{subfigure}
+\caption{Clinical-utility checks for probability quality and actionability.}
+\end{figure}
 
 \section{Results}
 
@@ -308,7 +345,7 @@ The endometriosis-overlap model is intentionally modest. It is trained on the su
 The Streamlit prototype at \code{src/app.py} loads the three joblib model artifacts and presents three tabs:
 
 \begin{itemize}
-  \item \textbf{Patient assessment}: an intake form with collapsible sections for labs/ultrasound and differential-workup inputs, followed by stacked screening, enhanced, and endometriosis-overlap results. Each PCOS result shows probability, action threshold, threshold-anchored risk tier, and top SHAP drivers.
+  \item \textbf{Patient assessment}: an intake form with collapsible sections for labs/ultrasound and differential-workup inputs, followed by stacked screening, enhanced, diagnostic-completeness, and endometriosis-overlap results. Each PCOS result shows probability, action threshold, threshold-anchored risk tier, and top SHAP drivers. The checklist adds Rotterdam-style workflow prompts, a missing-test caveat for biochemical hyperandrogenism, a metabolic follow-up prompt, and a lean-PCOS safety warning.
   \item \textbf{Population view}: symptom prevalence by PCOS status (source cohort, n=541) and headline model metrics.
   \item \textbf{About}: plain-language model descriptions, threshold strategy, and caveats.
 \end{itemize}
@@ -331,6 +368,7 @@ Notebook 06 extracts feature symbols from one PCOS single-cell sample and checks
   \item \textbf{Small, single-source PCOS dataset.} 541 patients from 10 hospitals in Kerala, India is not enough for deployment-level validation, and the geography may not generalise.
   \item \textbf{Synthetic endometriosis data.} The differential module is a workflow prompt, not a diagnostic claim.
   \item \textbf{Equity variables are unavailable.} Race, income, geography, and access-to-care measures are missing, so equity claims rest on workflow design and low-resource feasibility rather than measured outcome disparities.
+  \item \textbf{Subgroup recall gap.} Notebook 11 finds lower screening recall for the normal-BMI subgroup. The prototype therefore warns clinicians not to rule out lean PCOS solely from a low screening probability.
   \item \textbf{Clinical framing.} All outputs are framed as risk, triage, and decision support, not diagnosis.
   \item \textbf{Version sensitivity.} scikit-learn model artifacts are sensitive to version skew; \code{requirements.txt} pins the exact versions used during training.
   \item \textbf{Threshold philosophy.} Tiered thresholds favour sensitivity; clinicians who prefer specificity-first triage can switch to the balanced threshold reported in Table~\ref{tab:tradeoff} without retraining.
@@ -348,6 +386,13 @@ Artifact & Purpose \\
 \code{notebooks/04\_train\_endometriosis\_overlap\_model.ipynb} & Synthetic-data differential prompt model. \\
 \code{notebooks/05\_thresholds\_explainability\_and\_demo.ipynb} & SHAP attributions, held-out demo cases, model card. \\
 \code{notebooks/06\_single\_cell\_gene\_peek.ipynb} & Lightweight biological-rationale gene-list check. \\
+\code{notebooks/07\_uncertainty\_quantification.ipynb} & Bootstrap confidence intervals and paired AUC comparison. \\
+\code{notebooks/08\_calibration\_analysis.ipynb} & Calibration curves, Brier score, ECE, Platt and isotonic recalibration. \\
+\code{notebooks/09\_decision\_curve\_analysis.ipynb} & Decision-curve net-benefit analysis. \\
+\code{notebooks/10\_tabpfn\_benchmark.ipynb} & TabPFN-v2 benchmark against the selected random forest pipeline. \\
+\code{notebooks/11\_subgroup\_fairness.ipynb} & Age-band and BMI-category recall audit with bootstrap intervals. \\
+\code{notebooks/12\_conformal\_prediction.ipynb} & Split-conformal prediction-set coverage check. \\
+\code{notebooks/13\_rotterdam\_alignment.ipynb} & Rotterdam-style clinical-rule comparison on the same holdout split. \\
 \code{src/app.py} & Streamlit clinician-facing prototype. \\
 \code{outputs/models/*.joblib} & Saved model artifacts (with SHAP backgrounds). \\
 \code{outputs/metrics/*} & Held-out metrics, threshold trade-offs, SHAP tables, model card, audit reports. \\
@@ -359,6 +404,6 @@ Artifact & Purpose \\
 
 \section{Conclusion}
 
-The defensible pitch for PCOS Pathfinder is not automated diagnosis. It is a practical, explainable, tiered workflow that helps clinicians identify high-risk patients earlier (recall $\geq 0.88$), choose appropriate next investigations (the enhanced model dominates F2 at the same recall), and avoid overlooking adjacent women's health conditions (the differential prompt). The cleaning rules, threshold strategy, and SHAP attributions are reproducible end-to-end from the six numbered notebooks; the Streamlit prototype loads the same artifacts a clinician would use; and the limitations are stated up-front in the model card.
+The defensible pitch for PCOS Pathfinder is not automated diagnosis. It is a practical, explainable, tiered workflow that helps clinicians identify high-risk patients earlier (recall $\geq 0.88$), choose appropriate next investigations (the enhanced model dominates F2 at the same recall), and avoid overlooking adjacent women's health conditions (the differential prompt). The cleaning rules, threshold strategy, SHAP attributions, uncertainty checks, calibration analyses, fairness audit, and clinical benchmarks are reproducible end-to-end from the thirteen numbered notebooks; the Streamlit prototype loads the same artifacts a clinician would use; and the limitations are stated up-front in the model card.
 
 \end{document}

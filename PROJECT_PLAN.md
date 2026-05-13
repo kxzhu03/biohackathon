@@ -438,7 +438,7 @@ Inputs:
 
 - Age
 - BMI
-- Menstrual cycle pattern (regular vs. irregular) and length
+- Menstrual cycle pattern (regular vs. irregular) and duration of menses bleeding
 - Weight gain
 - Hair growth
 - Skin darkening
@@ -565,7 +565,7 @@ Feature set (no lifestyle proxies):
 - Age
 - BMI
 - Cycle regularity (raw and engineered flag)
-- Cycle length
+- Duration of menses bleeding (source column labelled `Cycle length(days)`)
 - Weight gain
 - Hair growth
 - Skin darkening
@@ -724,7 +724,10 @@ In use:
 - matplotlib + seaborn for plots
 - Streamlit for the clinician-facing prototype
 - joblib for serialising model artifacts
-- Node.js (only used by `scripts/create_training_notebooks.mjs` to deterministically regenerate the notebook set)
+- TabPFN for small-tabular benchmark modelling
+- ReportLab for the generated technical-report PDF
+- nbformat for deterministic construction of the two Python-built rigor notebooks
+- Node.js for `scripts/create_training_notebooks.mjs`, which regenerates notebooks 01-08 and 11-13 deterministically
 
 Repository structure (as built):
 
@@ -738,6 +741,13 @@ biohackathon/
     04_train_endometriosis_overlap_model.ipynb
     05_thresholds_explainability_and_demo.ipynb
     06_single_cell_gene_peek.ipynb
+    07_uncertainty_quantification.ipynb
+    08_calibration_analysis.ipynb
+    09_decision_curve_analysis.ipynb
+    10_tabpfn_benchmark.ipynb
+    11_subgroup_fairness.ipynb
+    12_conformal_prediction.ipynb
+    13_rotterdam_alignment.ipynb
     README.md
   outputs/
     figures/                      # plots used in the deck
@@ -746,6 +756,12 @@ biohackathon/
     pcos_cleaned.csv
   scripts/
     create_training_notebooks.mjs # regenerates notebooks deterministically
+    build_notebook_09.py          # builds the DCA notebook
+    build_notebook_10.py          # builds the TabPFN benchmark notebook
+  report/
+    build_pdf.py                  # generates the polished technical report PDF
+    pcos_pathfinder_report.tex    # TeXworks-friendly LaTeX source
+    pcos_pathfinder_report.pdf
   src/
     app.py                        # Streamlit prototype
   PROJECT_PLAN.md
@@ -946,7 +962,7 @@ By submission, the project should have:
 
 ## Methodology Rigor Upgrades
 
-Seven analyses were added on top of the base pipeline to align the submission with TRIPOD+AI 2024 reporting standards and contemporary clinical-ML best practice. Each is independently reproducible from a numbered notebook and is summarised in the technical report (`report/pcos_pathfinder_report.pdf`).
+Seven analyses were added on top of the base pipeline to align the submission with TRIPOD+AI-style reporting principles and contemporary clinical-ML best practice. Each is independently reproducible from a numbered notebook and is summarised in the technical report (`report/pcos_pathfinder_report.pdf`).
 
 | # | Notebook | Analysis | Recent reference |
 |---|---|---|---|
@@ -958,7 +974,17 @@ Seven analyses were added on top of the base pipeline to align the submission wi
 | 12 | `12_conformal_prediction.ipynb` | Split-conformal prediction sets with distribution-free coverage guarantee. Target 0.90, empirical 0.912 on holdout; mean set size 0.99. | Angelopoulos & Bates, *Found. Trends ML* 2023 |
 | 13 | `13_rotterdam_alignment.ipynb` | Hand-coded Rotterdam 2-of-3 clinical rule vs enhanced ML on the same holdout. ML adds 9.1 pts sensitivity for 1.1 pts specificity cost. | Rotterdam 2003; Teede et al., *Fertil Steril* 2023 |
 
-All seven were implemented in parallel git worktrees as part of a single `/batch` orchestration, then integrated on the `feat-integration` branch.
+All seven are reproducible from the committed notebooks, generated metric files, and figures. The key presentation point is that the model is not only accurate; it is also uncertainty-aware, calibrated, clinically benchmarked, and honest about subgroup risk.
+
+## Remaining High-Value Methodology Improvements
+
+These are the strongest next additions if time remains before judging:
+
+- Promote the new **diagnostic-completeness checklist** into the slide deck: Rotterdam-style components present, missing tests, and recommended next investigation. This converts the model from a prediction demo into a clinical workflow tool.
+- Add a **prospective validation plan**: name the external population needed next, minimum sample size target, endpoints, and acceptance criteria before real deployment.
+- Extend the **fairness mitigation** for the normal-BMI recall gap with a subgroup-aware threshold sensitivity analysis. The prototype already includes the "do not rule out lean PCOS solely from low model probability" warning.
+- Add a **calibrated probability display** in the Streamlit app if demo time allows. Judges will trust the tool more if probability quality and action thresholds are visible together.
+- Keep the TabPFN result as a benchmark, not the deployed model. The current random forest story is more deployable, easier to explain, and recall-aligned.
 
 ## Final Recommendation
 
