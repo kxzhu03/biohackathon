@@ -6,7 +6,7 @@ Biohackathon 2026 submission package for **PCOS Pathfinder**.
 
 - `README.md` — quickstart and results snapshot (now headlines bootstrap CIs and the paired AUC test).
 - `PROJECT_PLAN.md` — full design rationale.
-- `requirements.txt` — pinned dependencies for reproducibility (includes `tabpfn<7` and `pymupdf` in addition to the base stack).
+- `requirements.txt` — exact pins for the core runtime plus a constrained `tabpfn<7` benchmark dependency and `pymupdf`.
 - `notebooks/` — **thirteen** numbered analysis notebooks plus `notebooks/README.md`.
   - 01–06: base pipeline (data audit, screening model, enhanced model, endometriosis overlap, SHAP/demo, single-cell peek).
   - 07: bootstrap CIs and paired AUC-difference test.

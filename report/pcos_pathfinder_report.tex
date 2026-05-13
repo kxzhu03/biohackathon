@@ -360,7 +360,7 @@ Risk tiers are anchored to each model's threshold so the displayed tier never co
 
 \section{Biological Rationale from Single-Cell Feature Lists}
 
-Notebook 06 extracts feature symbols from one PCOS single-cell sample and checks for the presence of a curated list of literature-supported PCOS genes across steroidogenesis (CYP17A1, CYP19A1, HSD3B2, STAR), androgen signalling (AR, SRD5A1, SRD5A2, HSD17B3), follicular development (FSHR, LHCGR, GATA4), AMH signalling (AMH, AMHR2), insulin signalling (INSR, IRS1, IRS2, INS), and PCOS GWAS loci (DENND1A, THADA, FSHB). All 20 curated genes appear in the per-sample feature lists, giving the slide deck a defensible biological rationale for the clinical features the model uses. No QC, normalisation, integration, clustering, or differential expression analysis is claimed.
+Notebook 06 extracts feature symbols from the first available PCOS single-cell sample and checks for the presence of a curated list of literature-supported PCOS genes across steroidogenesis (CYP17A1, CYP19A1, HSD3B2, STAR), androgen signalling (AR, SRD5A1, SRD5A2, HSD17B3), follicular development (FSHR, LHCGR, GATA4), AMH signalling (AMH, AMHR2), insulin signalling (INSR, IRS1, IRS2, INS), and PCOS GWAS loci (DENND1A, THADA, FSHB). All 20 curated genes appear in that sampled feature list, giving the slide deck a defensible biological rationale for the clinical feature families the model uses. No QC, normalisation, integration, clustering, or differential expression analysis is claimed.
 
 \section{Limitations and Risk Controls}
 
@@ -370,7 +370,7 @@ Notebook 06 extracts feature symbols from one PCOS single-cell sample and checks
   \item \textbf{Equity variables are unavailable.} Race, income, geography, and access-to-care measures are missing, so equity claims rest on workflow design and low-resource feasibility rather than measured outcome disparities.
   \item \textbf{Subgroup recall gap.} Notebook 11 finds lower screening recall for the normal-BMI subgroup. The prototype therefore warns clinicians not to rule out lean PCOS solely from a low screening probability.
   \item \textbf{Clinical framing.} All outputs are framed as risk, triage, and decision support, not diagnosis.
-  \item \textbf{Version sensitivity.} scikit-learn model artifacts are sensitive to version skew; \code{requirements.txt} pins the exact versions used during training.
+  \item \textbf{Version sensitivity.} scikit-learn model artifacts are sensitive to version skew; \code{requirements.txt} pins the core artifact-loading stack and constrains TabPFN to the open-weights checkpoint line used for notebook 10.
   \item \textbf{Threshold philosophy.} Tiered thresholds favour sensitivity; clinicians who prefer specificity-first triage can switch to the balanced threshold reported in Table~\ref{tab:tradeoff} without retraining.
 \end{itemize}
 

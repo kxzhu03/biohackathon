@@ -923,7 +923,7 @@ def build():
         "The Streamlit prototype at <font face='Courier'>src/app.py</font> loads the three joblib model artifacts and "
         "presents three tabs:"
     ))
-    story.append(bullet("<b>Patient assessment</b> &mdash; intake form with collapsible sections for labs/ultrasound and differential-workup inputs, followed by stacked screening, enhanced, and endometriosis-overlap results. Each PCOS result shows probability, action threshold, threshold-anchored risk tier, and top SHAP drivers."))
+    story.append(bullet("<b>Patient assessment</b> &mdash; intake form with collapsible sections for labs/ultrasound and differential-workup inputs, followed by stacked screening, enhanced, diagnostic-completeness, and endometriosis-overlap results. Each PCOS result shows probability, action threshold, threshold-anchored risk tier, and top SHAP drivers. The checklist adds Rotterdam-style workflow prompts, a missing-test caveat for biochemical hyperandrogenism, a metabolic follow-up prompt, and a lean-PCOS safety warning."))
     story.append(bullet("<b>Population view</b> &mdash; symptom prevalence by PCOS status (source cohort, n=541) and headline model metrics."))
     story.append(bullet("<b>About</b> &mdash; plain-language model descriptions, threshold strategy, and caveats."))
     story.append(para(
@@ -936,12 +936,12 @@ def build():
     # ---- 14. Biological rationale -----------------------------------------
     story.append(h1("14. Biological Rationale from Single-Cell Feature Lists"))
     story.append(para(
-        "Notebook 06 extracts feature symbols from one PCOS single-cell sample and checks for the presence of a "
+        "Notebook 06 extracts feature symbols from the first available PCOS single-cell sample and checks for the presence of a "
         "curated list of literature-supported PCOS genes across steroidogenesis (CYP17A1, CYP19A1, HSD3B2, STAR), "
         "androgen signalling (AR, SRD5A1, SRD5A2, HSD17B3), follicular development (FSHR, LHCGR, GATA4), AMH "
         "signalling (AMH, AMHR2), insulin signalling (INSR, IRS1, IRS2, INS), and PCOS GWAS loci (DENND1A, THADA, "
-        "FSHB). All 20 curated genes appear in the per-sample feature lists, giving the slide deck a defensible "
-        "biological rationale for the clinical features the model uses. No QC, normalisation, integration, clustering, "
+        "FSHB). All 20 curated genes appear in that sampled feature list, giving the slide deck a defensible "
+        "biological rationale for the clinical feature families the model uses. No QC, normalisation, integration, clustering, "
         "or differential expression analysis is claimed."
     ))
 
@@ -953,7 +953,7 @@ def build():
     story.append(bullet("<b>Subgroup recall gaps.</b> A 25-point BMI recall gap in screening (lowest in the normal-BMI band) is an honest finding and a deployment risk; mitigation is subgroup-specific monitoring and external validation on a more balanced cohort."))
     story.append(bullet("<b>Missing serum testosterone.</b> The Rotterdam benchmark in &sect;10.2 approximates biochemical hyperandrogenism with AMH and LH/FSH features because direct testosterone is not in the dataset."))
     story.append(bullet("<b>Clinical framing.</b> All outputs are framed as risk, triage, and decision support, not diagnosis."))
-    story.append(bullet("<b>Version sensitivity.</b> scikit-learn model artifacts are sensitive to version skew; <font face='Courier'>requirements.txt</font> pins the exact versions used during training."))
+    story.append(bullet("<b>Version sensitivity.</b> scikit-learn model artifacts are sensitive to version skew; <font face='Courier'>requirements.txt</font> pins the core artifact-loading stack and constrains TabPFN to the open-weights checkpoint line used for notebook 10."))
     story.append(bullet("<b>Threshold philosophy.</b> Tiered thresholds favour sensitivity; clinicians who prefer specificity-first triage can switch to the balanced threshold in Table 4 without retraining."))
 
     # ---- 16. Reproducible artifacts ---------------------------------------

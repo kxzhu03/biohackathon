@@ -4,7 +4,7 @@ Run from the project root:
     streamlit run src/app.py
 
 Loads the joblib artifacts produced by notebooks 02, 03, and 04. Renders the
-five-screen workflow described in PROJECT_PLAN.md.
+three-tab clinician workflow described in PROJECT_PLAN.md.
 """
 
 from __future__ import annotations

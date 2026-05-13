@@ -694,15 +694,16 @@ Implemented as a Streamlit app at [`src/app.py`](src/app.py). Launch with `strea
 
 Patient intake form (collapsible sections):
 
-- Symptoms and basic vitals: age, BMI, cycle pattern/length, weight gain, hair growth, skin darkening, hair loss, pimples, RBS, BP systolic/diastolic.
+- Symptoms and basic vitals: age, BMI, cycle pattern, duration of menses bleeding, weight gain, hair growth, skin darkening, hair loss, pimples, RBS, BP systolic/diastolic.
 - Labs and ultrasound (expander): Hb, FSH, LH, TSH, AMH, prolactin, vitamin D3, progesterone, follicle counts and sizes, endometrium thickness. `FSH/LH` is derived automatically.
 - Differential workup (expander): menstrual irregularity, chronic pain (0-10), hormone-level abnormality, infertility.
 
-On "Run assessment", the app renders three result blocks stacked vertically:
+On "Run assessment", the app renders four result blocks stacked vertically:
 
 1. **Frontline screening** - probability, action threshold, threshold-aware risk tier, top 6 SHAP drivers in log-odds units.
 2. **Enhanced diagnostic support** - same shape using the labs/ultrasound model.
-3. **Endometriosis-overlap prompt** - warning or info note framed as a workflow nudge, with the synthetic-data caveat visible.
+3. **Diagnostic completeness and safety checks** - Rotterdam-style workflow prompts, missing-test caveat for biochemical hyperandrogenism, metabolic follow-up prompt, and lean-PCOS safety warning.
+4. **Endometriosis-overlap prompt** - warning or info note framed as a workflow nudge, with the synthetic-data caveat visible.
 
 ### Tab 2: Population view
 

@@ -1,6 +1,6 @@
 # Pinned to the versions used when training the artifacts under outputs/models/.
 # joblib model artifacts are sensitive to scikit-learn major versions, so the
-# pins are tight rather than open ranges.
+# core runtime pins are exact. TabPFN is constrained separately below.
 pandas==2.2.3
 numpy==2.2.6
 scikit-learn==1.6.1
