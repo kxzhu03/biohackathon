@@ -274,6 +274,10 @@
       cursor: pointer;
     }
     button:hover { background: rgba(15, 23, 42, 0.9); }
+    button.active {
+      background: rgba(201, 137, 16, 0.92);
+      border-color: rgba(255,255,255,0.42);
+    }
     .counter {
       color: #fff;
       font-size: 13px;
@@ -310,7 +314,7 @@
     }
     .notes-panel.show { display: block; }
     .notes-panel h4 { margin: 0 0 8px; color: #fff; }
-    .notes-panel p { color: #d1d5db; font-size: 15px; line-height: 1.45; }
+    .notes-panel p { color: #d1d5db; font-size: 15px; line-height: 1.45; margin: 0 0 12px; }
     .notes { display: none; }
 
     .closing {
@@ -1357,6 +1361,7 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
       <button id="prev" aria-label="Previous slide">Prev</button>
       <button id="next" aria-label="Next slide">Next</button>
       <button id="notesBtn" aria-label="Toggle speaker notes">Notes</button>
+      <button id="explainBtn" aria-label="Toggle plain-language explanation">Explain</button>
     </div>
     <div class="counter" id="counter"></div>
   </div>
@@ -1367,7 +1372,93 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
     const counter = document.getElementById('counter');
     const progress = document.getElementById('progress');
     const notesPanel = document.getElementById('notesPanel');
+    const notesBtn = document.getElementById('notesBtn');
+    const explainBtn = document.getElementById('explainBtn');
     let index = 0;
+    let panelMode = 'notes';
+
+    const explanations = {
+      'Title': [
+        'This opening slide introduces PCOS Pathfinder. It is a tool that helps clinicians spot possible PCOS earlier and decide what to check next. It does not claim to diagnose a patient by itself.',
+        'The three numbers are the quick proof points: the stronger model performs well on the held-out test data, it catches most PCOS-positive patients, and the work is reproducible from the project notebooks.'
+      ],
+      'Problem': [
+        'This slide explains why PCOS is hard to diagnose. PCOS can show up as irregular periods, acne, hair growth, weight changes, fertility problems, hormone changes, or ultrasound findings. No single symptom tells the whole story.',
+        'The main problem is that these clues can be spread across different appointments. The project is trying to help clinicians combine the clues earlier instead of waiting until the pattern becomes obvious much later.'
+      ],
+      'Workflow': [
+        'This slide shows the product flow. First, the tool can screen using simple information like symptoms and basic vitals. Later, if labs and ultrasound are available, the enhanced model gives a stronger assessment.',
+        'The checklist is a safety layer: it reminds the clinician what evidence is present, what evidence is missing, and what other conditions may need workup. The endometriosis prompt is only a reminder to think broader, not a diagnosis.'
+      ],
+      'Data': [
+        'This slide explains what data the project uses and where the limits are. The real PCOS clinical dataset is the main dataset. The endometriosis dataset is synthetic, so it is only used for a cautious overlap prompt.',
+        'The most important data-cleaning point is that a column labelled cycle length actually behaves like bleeding duration. The app uses the safer label so nobody enters a normal 28-day menstrual cycle value into a field where the training data only ranges from 0 to 12.'
+      ],
+      'Demo 1: Data audit': [
+        'This code slide shows how the project cleans the raw spreadsheet before modelling. In plain language, the code standardizes column names, converts values into numbers, records suspicious values, and removes columns that should not be used.',
+        'The audit table proves the cleaning was not silent. For example, the dataset contained values like 1.99. and a, which are not clean numbers. The notebook logs them so reviewers can see exactly what happened.'
+      ],
+      'Method': [
+        'This slide explains how the models were trained fairly. The data is split into training and held-out test data. The model learns and chooses thresholds only from the training side.',
+        'The held-out test data is saved for the final check. That matters because using the test set to tune the model would make the reported performance look better than it really is.'
+      ],
+      'Demo 2: Threshold CV': [
+        'This code slide explains how the action threshold is chosen. A threshold is the probability cutoff where the model changes from low risk to action needed.',
+        'The important point is that the threshold is selected using cross-validation inside the training data. The final test set is used only once afterward, which makes the result more honest.'
+      ],
+      'Results': [
+        'This slide is the main performance summary. AUC measures how well the model separates PCOS from non-PCOS across thresholds. Recall measures how many true PCOS cases the model catches.',
+        'The screening model catches 39 out of 44 PCOS-positive holdout patients. The enhanced model keeps the same recall but greatly improves specificity and precision, meaning it produces fewer false alarms once labs and ultrasound are available.'
+      ],
+      'Rigor': [
+        'This slide explains the extra checks that make the results more trustworthy. Instead of reporting only one score, the project estimates uncertainty, checks whether probabilities are well calibrated, and tests how the model behaves when it is unsure.',
+        'Calibration means that a predicted probability should behave like a real probability. Conformal prediction adds a way for the model to say, in effect, I am not confident enough, which is safer than forcing an answer.'
+      ],
+      'Demo 3: Bootstrap CIs': [
+        'This code slide explains confidence intervals. A confidence interval is a range that shows how much the score might move if the holdout sample were slightly different.',
+        'The bootstrap repeats the evaluation 2000 times on resampled versions of the holdout set. That gives a range for the difference between the screening and enhanced models instead of only one point estimate.'
+      ],
+      'Utility': [
+        'This slide asks whether the model is useful for real decisions, not just accurate on paper. Decision curve analysis compares the model against simple options like treating everyone or treating no one.',
+        'The subgroup section is a safety check. The model is weaker for normal-BMI patients in the screening setting, so the prototype warns users not to dismiss lean PCOS when symptoms continue.'
+      ],
+      'Demo 5: Conformal': [
+        'This code slide explains the uncertainty feature in simple terms. The model can return a set of possible labels instead of pretending it is always certain.',
+        'If the prediction set is empty, that means the model is not confident enough under the conformal rule. In a clinical workflow, that should become a review or follow-up prompt, not a forced answer.'
+      ],
+      'Explainability': [
+        'This slide shows how a clinician can understand why the model made a prediction. SHAP is a method that breaks the prediction into feature contributions, showing which patient details pushed risk up or down.',
+        'The checklist makes the explanation more clinical. It turns the model output into questions a clinician already understands: Is there cycle irregularity? Are there hyperandrogenic symptoms? Are ultrasound findings present? Are metabolic follow-ups needed?'
+      ],
+      'Demo 4: Patient SHAP': [
+        'This demo slide walks through one patient-level explanation. The case is from the held-out test data, meaning the model did not train on that patient.',
+        'The explanation shows that follicle counts and related clinical signals drive the high-risk prediction. This is reassuring because those are clinically meaningful PCOS features, not random or stigmatizing proxy variables.'
+      ],
+      'Benchmarks': [
+        'This slide compares the project to two reference points. TabPFN is a modern machine-learning model for small tables. Rotterdam is a clinical rule doctors use for PCOS diagnosis.',
+        'The point is not that one method is perfect. TabPFN slightly improves AUC but is less practical for this deployment story. The Rotterdam comparison shows the enhanced model catches more PCOS cases, while the slide also admits the dataset lacks testosterone.'
+      ],
+      'Differential': [
+        'This slide explains the endometriosis-overlap module. Some symptoms can overlap across gynecologic conditions, so a PCOS tool should not make clinicians stop thinking about other possibilities.',
+        'Because the endometriosis data is synthetic, the module is not a diagnostic claim. It is a reminder: if pain, infertility, hormone abnormality, and menstrual irregularity appear together, consider broader workup.'
+      ],
+      'Implementation': [
+        'This slide shows that the project is not just a concept. There is a working Streamlit app, saved model files, executed notebooks, exported metrics, figures, a model card, and packaging instructions.',
+        'The bottom table explains what would be needed before real clinical use: validate on outside data, run a silent pilot beside usual care, and then do a prospective study before any deployment claim.'
+      ],
+      'Impact': [
+        'This closing slide explains why the project matters. The goal is earlier, clearer next steps for patients who might otherwise wait years for PCOS assessment.',
+        'The key takeaway is that PCOS Pathfinder is decision support. It helps clinicians decide what to check next, explains the evidence, warns about uncertainty and subgroup risk, and keeps the final diagnosis in clinical hands.'
+      ],
+      'App backup: high-risk case': [
+        'This backup slide is a static version of the app for a high-risk patient, useful if the live Streamlit demo fails. It shows what a clinician would see after entering patient information.',
+        'Both PCOS models show high risk, the explanation points to ovarian morphology and related features, and the checklist shows multiple PCOS-supporting signals. This is the strongest example of the full workflow.'
+      ],
+      'App backup: low-risk case': [
+        'This backup slide shows the opposite: a non-PCOS holdout patient. One lab value, AMH, may look concerning by itself, but the full pattern is not PCOS-like.',
+        'The model integrates the whole picture: regular cycle pattern, low follicle counts, and no checklist boxes ticked. This shows the system is not simply reacting to one isolated lab value.'
+      ]
+    };
 
     function render() {
       slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
@@ -1376,9 +1467,30 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
       const time = current.dataset.time;
       counter.textContent = `${String(index + 1).padStart(2, '0')} / ${slides.length}  |  ${time}`;
       progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-      const notes = current.querySelector('.notes')?.textContent?.trim() || '';
-      notesPanel.innerHTML = `<h4>${title} (${time})</h4><p>${notes}</p>`;
+      renderPanel();
       location.hash = String(index + 1);
+    }
+
+    function renderPanel() {
+      const current = slides[index];
+      const title = current.dataset.title;
+      const time = current.dataset.time;
+      const notes = current.querySelector('.notes')?.textContent?.trim() || '';
+      const explanation = explanations[title] || ['Plain-language explanation not available for this slide. Use the visible heading and speaker notes as the source of truth.'];
+      const body = panelMode === 'notes'
+        ? `<p>${notes}</p>`
+        : explanation.map(paragraph => `<p>${paragraph}</p>`).join('');
+      const label = panelMode === 'notes' ? 'Speaker notes' : 'Plain-language explanation';
+      notesPanel.innerHTML = `<h4>${label}: ${title} (${time})</h4>${body}`;
+      notesBtn.classList.toggle('active', notesPanel.classList.contains('show') && panelMode === 'notes');
+      explainBtn.classList.toggle('active', notesPanel.classList.contains('show') && panelMode === 'explanation');
+    }
+
+    function togglePanel(mode) {
+      const sameOpenMode = notesPanel.classList.contains('show') && panelMode === mode;
+      panelMode = mode;
+      notesPanel.classList.toggle('show', !sameOpenMode);
+      renderPanel();
     }
 
     function go(delta) {
@@ -1388,11 +1500,13 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
 
     document.getElementById('prev').addEventListener('click', () => go(-1));
     document.getElementById('next').addEventListener('click', () => go(1));
-    document.getElementById('notesBtn').addEventListener('click', () => notesPanel.classList.toggle('show'));
+    notesBtn.addEventListener('click', () => togglePanel('notes'));
+    explainBtn.addEventListener('click', () => togglePanel('explanation'));
     window.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') go(1);
       if (event.key === 'ArrowLeft' || event.key === 'PageUp') go(-1);
-      if (event.key.toLowerCase() === 'n') notesPanel.classList.toggle('show');
+      if (event.key.toLowerCase() === 'n') togglePanel('notes');
+      if (event.key.toLowerCase() === 'e') togglePanel('explanation');
     });
     const start = Number(location.hash.replace('#', ''));
     if (start >= 1 && start <= slides.length) index = start - 1;
