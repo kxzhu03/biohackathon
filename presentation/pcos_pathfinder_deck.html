@@ -435,6 +435,174 @@
     @media (max-width: 900px) {
       .demo-row { grid-template-columns: 1fr; }
     }
+
+    /* ===== Faux Streamlit app preview (static, no server) ===== */
+    .app-frame {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .app-tabs {
+      display: flex;
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+      border-bottom: 1px solid var(--line);
+      padding: 0 12px;
+    }
+    .app-tab {
+      padding: 11px 18px;
+      font-size: 12.5px;
+      font-weight: 750;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    .app-tab.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+    .app-body {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 22px;
+      padding: 16px 20px;
+    }
+    .app-section-title {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+    .app-section-title + .app-section-title { margin-top: 8px; }
+    .intake-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+      font-size: 12.5px;
+      margin-bottom: 4px;
+    }
+    .intake-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dotted var(--line);
+    }
+    .intake-row .lbl { color: var(--muted); font-weight: 600; }
+    .intake-row .val { color: var(--ink); font-weight: 700; }
+    .intake-row .val.pos { color: var(--coral); }
+    .intake-row .val.neg { color: var(--muted); font-weight: 600; }
+    .result-card {
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 13px;
+      margin-bottom: 9px;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 7px;
+    }
+    .result-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .result-tag { font-size: 11px; color: var(--muted); }
+    .metric-row {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .metric-cell { display: grid; gap: 2px; }
+    .metric-cell .lab {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .metric-cell .val {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .tier-pill {
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-weight: 850;
+      font-size: 12.5px;
+      letter-spacing: 0.05em;
+      text-align: center;
+      justify-self: end;
+    }
+    .tier-low  { background: #d1fae5; color: var(--green); }
+    .tier-mod  { background: #fef3c7; color: var(--gold); }
+    .tier-high { background: #fee2e2; color: #b91c1c; }
+    .shap-table {
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.5fr 0.6fr 0.7fr;
+      row-gap: 0;
+    }
+    .shap-table .scell {
+      padding: 4px 0;
+      border-bottom: 1px dotted var(--line);
+    }
+    .shap-table .shead {
+      font-weight: 800;
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    .shap-table .num { text-align: right; }
+    .shap-table .dir { padding-left: 10px; }
+    .shap-up { color: #b91c1c; font-weight: 750; }
+    .shap-down { color: var(--teal); font-weight: 750; }
+    .checklist { display: grid; gap: 4px; margin-bottom: 4px; }
+    .checklist-row {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      font-size: 12.5px;
+      align-items: baseline;
+      line-height: 1.35;
+    }
+    .checklist-row .ico.yes { color: var(--green); font-weight: 900; }
+    .checklist-row .ico.no  { color: var(--muted); font-weight: 900; }
+    .endo-alert {
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+    .endo-alert.warn {
+      background: #fff8e6;
+      border-left: 4px solid var(--gold);
+      color: var(--navy);
+    }
+    .endo-alert.info {
+      background: var(--soft-teal);
+      border-left: 4px solid var(--teal);
+      color: var(--ink);
+    }
+    .app-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -961,6 +1129,226 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
       <aside class="notes">The public-health value is earlier triage. The low-resource value is that the first model does not require labs or ultrasound. The safety value is that the system explains itself and states what it does not know. And the equity value is honesty: we found a subgroup risk and built a warning around it, rather than presenting a polished but unsafe story.</aside>
     </section>
 
+    <!-- ===================================================================
+         BACKUP slides: static replicas of the Streamlit app for the two
+         held-out demo cases. No server required. Use them if streamlit
+         fails, or in Q&A when a judge says "show me the app."
+         Numbers are pulled verbatim from outputs/metrics/demo_*.csv,
+         demo_case_predictions.json, and the held-out test split
+         (idx 395 = PCOS-positive, idx 383 = PCOS-negative).
+         =================================================================== -->
+
+    <section class="slide" data-title="App backup: high-risk case" data-time="backup / Q&A">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Static app preview &middot; backup &middot; no server required</span>
+        <h2>What the clinician sees &mdash; held-out PCOS-positive patient.</h2>
+        <div class="app-frame">
+          <div class="app-tabs">
+            <div class="app-tab active">Patient assessment</div>
+            <div class="app-tab">Population view</div>
+            <div class="app-tab">About</div>
+          </div>
+          <div class="app-body">
+            <div>
+              <div class="app-section-title">Patient intake (test-set row 395)</div>
+              <div class="intake-list">
+                <div class="intake-row"><span class="lbl">Age</span><span class="val">29</span></div>
+                <div class="intake-row"><span class="lbl">BMI</span><span class="val pos">29.3</span></div>
+                <div class="intake-row"><span class="lbl">Cycle</span><span class="val pos">Irregular</span></div>
+                <div class="intake-row"><span class="lbl">Bleeding days</span><span class="val">3</span></div>
+                <div class="intake-row"><span class="lbl">Weight gain</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">Hair growth</span><span class="val neg">No</span></div>
+                <div class="intake-row"><span class="lbl">Skin darkening</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">Hair loss</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">Pimples</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">RBS</span><span class="val">92 mg/dl</span></div>
+                <div class="intake-row"><span class="lbl">AMH</span><span class="val pos">6.0 ng/mL</span></div>
+                <div class="intake-row"><span class="lbl">FSH/LH</span><span class="val">0.90</span></div>
+                <div class="intake-row"><span class="lbl">Follicles L/R</span><span class="val pos">10 / 9</span></div>
+                <div class="intake-row"><span class="lbl">Endometrium</span><span class="val">8 mm</span></div>
+              </div>
+              <div class="app-section-title">Diagnostic completeness</div>
+              <div class="checklist">
+                <div class="checklist-row"><span class="ico yes">&check;</span><span><strong>Ovulatory dysfunction:</strong> irregular cycle pattern present</span></div>
+                <div class="checklist-row"><span class="ico yes">&check;</span><span><strong>Clinical hyperandrogenism:</strong> skin darkening + hair loss + acne</span></div>
+                <div class="checklist-row"><span class="ico yes">&check;</span><span><strong>Polycystic morphology:</strong> follicle counts 10 / 9</span></div>
+                <div class="checklist-row"><span class="ico yes">&check;</span><span><strong>Metabolic follow-up:</strong> consider (BMI 29.3 overweight)</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="app-section-title">Tiered assessment</div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-name">Frontline screening</div>
+                  <div class="result-tag">primary care / telehealth, no labs</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-cell"><div class="lab">Probability</div><div class="val">88.6%</div></div>
+                  <div class="metric-cell"><div class="lab">Threshold</div><div class="val">0.29</div></div>
+                  <div class="tier-pill tier-high">HIGH RISK</div>
+                </div>
+              </div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-name">Enhanced (labs + ultrasound)</div>
+                  <div class="result-tag">diagnostic support</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-cell"><div class="lab">Probability</div><div class="val">90.7%</div></div>
+                  <div class="metric-cell"><div class="lab">Threshold</div><div class="val">0.38</div></div>
+                  <div class="tier-pill tier-high">HIGH RISK</div>
+                </div>
+              </div>
+
+              <div class="app-section-title">Top SHAP drivers (enhanced model)</div>
+              <div class="shap-table">
+                <div class="shead scell">Feature</div>
+                <div class="shead scell num">Value</div>
+                <div class="shead scell num">Log-odds</div>
+                <div class="shead scell dir">Direction</div>
+
+                <div class="scell">follicle_no_r</div>
+                <div class="scell num">9</div>
+                <div class="scell num">+0.092</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">follicle_no_l</div>
+                <div class="scell num">10</div>
+                <div class="scell num">+0.090</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">skin_darkening</div>
+                <div class="scell num">1</div>
+                <div class="scell num">+0.069</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">weight_gain</div>
+                <div class="scell num">1</div>
+                <div class="scell num">+0.066</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">hair_growth</div>
+                <div class="scell num">0</div>
+                <div class="scell num">&minus;0.031</div>
+                <div class="scell dir shap-down">&darr; PCOS</div>
+              </div>
+
+              <div class="endo-alert info"><strong>Endometriosis overlap:</strong> low overlap signal (chronic pain not reported). Synthetic-data prompt only.</div>
+              <div class="app-note">Pre-rendered from <code>outputs/metrics/demo_*.csv</code>. Equivalent to <code>streamlit run src/app.py</code>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">This is the static app backup. If streamlit fails on demo day, this slide is the actual prototype. Show the clinician walks in, fills the intake, and sees both tiered scores in High-risk, the top SHAP drivers led by ovarian morphology, the Rotterdam-style checklist all four boxes ticked, and the endometriosis-overlap module quiet. The whole flow is below the fold of a single laptop screen.</aside>
+    </section>
+
+    <section class="slide" data-title="App backup: low-risk case" data-time="backup / Q&A">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Static app preview &middot; backup &middot; no server required</span>
+        <h2>What the clinician sees &mdash; held-out non-PCOS patient.</h2>
+        <div class="app-frame">
+          <div class="app-tabs">
+            <div class="app-tab active">Patient assessment</div>
+            <div class="app-tab">Population view</div>
+            <div class="app-tab">About</div>
+          </div>
+          <div class="app-body">
+            <div>
+              <div class="app-section-title">Patient intake (test-set row 383)</div>
+              <div class="intake-list">
+                <div class="intake-row"><span class="lbl">Age</span><span class="val">32</span></div>
+                <div class="intake-row"><span class="lbl">BMI</span><span class="val">24.2</span></div>
+                <div class="intake-row"><span class="lbl">Cycle</span><span class="val">Regular</span></div>
+                <div class="intake-row"><span class="lbl">Bleeding days</span><span class="val">6</span></div>
+                <div class="intake-row"><span class="lbl">Weight gain</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">Hair growth</span><span class="val neg">No</span></div>
+                <div class="intake-row"><span class="lbl">Skin darkening</span><span class="val neg">No</span></div>
+                <div class="intake-row"><span class="lbl">Hair loss</span><span class="val neg">No</span></div>
+                <div class="intake-row"><span class="lbl">Pimples</span><span class="val pos">Yes</span></div>
+                <div class="intake-row"><span class="lbl">RBS</span><span class="val">100 mg/dl</span></div>
+                <div class="intake-row"><span class="lbl">AMH</span><span class="val pos">11.4 ng/mL</span></div>
+                <div class="intake-row"><span class="lbl">FSH/LH</span><span class="val">3.03</span></div>
+                <div class="intake-row"><span class="lbl">Follicles L/R</span><span class="val">2 / 3</span></div>
+                <div class="intake-row"><span class="lbl">Endometrium</span><span class="val">8 mm</span></div>
+              </div>
+              <div class="app-section-title">Diagnostic completeness</div>
+              <div class="checklist">
+                <div class="checklist-row"><span class="ico no">&minus;</span><span><strong>Ovulatory dysfunction:</strong> regular cycle pattern</span></div>
+                <div class="checklist-row"><span class="ico no">&minus;</span><span><strong>Clinical hyperandrogenism:</strong> only acne reported</span></div>
+                <div class="checklist-row"><span class="ico no">&minus;</span><span><strong>Polycystic morphology:</strong> follicle counts 2 / 3 (low)</span></div>
+                <div class="checklist-row"><span class="ico no">&minus;</span><span><strong>Metabolic follow-up:</strong> no immediate prompt (BMI 24.2)</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="app-section-title">Tiered assessment</div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-name">Frontline screening</div>
+                  <div class="result-tag">primary care / telehealth, no labs</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-cell"><div class="lab">Probability</div><div class="val">20.8%</div></div>
+                  <div class="metric-cell"><div class="lab">Threshold</div><div class="val">0.29</div></div>
+                  <div class="tier-pill tier-low">LOW RISK</div>
+                </div>
+              </div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-name">Enhanced (labs + ultrasound)</div>
+                  <div class="result-tag">diagnostic support</div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric-cell"><div class="lab">Probability</div><div class="val">21.4%</div></div>
+                  <div class="metric-cell"><div class="lab">Threshold</div><div class="val">0.38</div></div>
+                  <div class="tier-pill tier-low">LOW RISK</div>
+                </div>
+              </div>
+
+              <div class="app-section-title">Top SHAP drivers (enhanced model)</div>
+              <div class="shap-table">
+                <div class="shead scell">Feature</div>
+                <div class="shead scell num">Value</div>
+                <div class="shead scell num">Log-odds</div>
+                <div class="shead scell dir">Direction</div>
+
+                <div class="scell">follicle_no_r</div>
+                <div class="scell num">3</div>
+                <div class="scell num">&minus;0.157</div>
+                <div class="scell dir shap-down">&darr; PCOS</div>
+
+                <div class="scell">follicle_no_l</div>
+                <div class="scell num">2</div>
+                <div class="scell num">&minus;0.117</div>
+                <div class="scell dir shap-down">&darr; PCOS</div>
+
+                <div class="scell">amh_ng_ml</div>
+                <div class="scell num">11.4</div>
+                <div class="scell num">+0.062</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">weight_gain</div>
+                <div class="scell num">1</div>
+                <div class="scell num">+0.061</div>
+                <div class="scell dir shap-up">&uarr; PCOS</div>
+
+                <div class="scell">skin_darkening</div>
+                <div class="scell num">0</div>
+                <div class="scell num">&minus;0.036</div>
+                <div class="scell dir shap-down">&darr; PCOS</div>
+              </div>
+
+              <div class="endo-alert info"><strong>Endometriosis overlap:</strong> low overlap signal. Synthetic-data prompt only.</div>
+              <div class="app-note">Note the elevated AMH (11.4) pushes <strong>up</strong>, but low follicle counts (2 / 3) dominate &mdash; model correctly says low risk.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">The second backup case shows a non-PCOS holdout patient. The interesting clinical story: AMH is elevated at 11.4, which a clinician might initially worry about. But the ovarian morphology shows low follicle counts of two and three, and the cycle is regular. The model integrates these signals correctly and returns low risk on both tiers. None of the four Rotterdam-style checklist boxes tick. This demonstrates the model is not just thresholding on AMH alone.</aside>
+    </section>
 
     </main>
 
