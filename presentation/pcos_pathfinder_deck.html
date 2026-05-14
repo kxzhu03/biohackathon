@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PCOS Pathfinder - 12 Minute Hackathon Pitch</title>
+  <title>PCOS Pathfinder — 12 min pitch (with live-walkthrough demos)</title>
   <style>
     :root {
       --ink: #14213d;
@@ -358,13 +358,90 @@
       .slide { display: grid !important; position: relative; page-break-after: always; width: 100vw; height: 100vh; }
       .nav, .progress, .notes-panel { display: none !important; }
     }
+
+    /* ===== Demo slides (code + pre-rendered output) ===== */
+    .demo-row {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: stretch;
+      min-height: 0;
+    }
+    .code-card, .output-card {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .code-card { background: #0f172a; border: 1px solid #1e293b; }
+    .output-card { background: #fbfcfd; border: 1px solid var(--line); }
+    .card-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-bottom: 1px solid transparent;
+    }
+    .code-card .card-label {
+      color: #93c5fd;
+      background: #111c2e;
+      border-bottom-color: #1e293b;
+    }
+    .output-card .card-label {
+      color: var(--teal);
+      background: var(--soft-teal);
+      border-bottom-color: var(--line);
+    }
+    .code-card pre, .output-card pre {
+      margin: 0;
+      padding: 16px 18px;
+      font-family: "JetBrains Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+      font-size: 12.5px;
+      line-height: 1.55;
+      overflow: auto;
+      flex: 1;
+      white-space: pre;
+      tab-size: 4;
+    }
+    .code-card pre { color: #e5e7eb; }
+    .output-card pre { color: #14213d; background: #fdfefe; }
+    /* Inline syntax-highlight helpers used inside <pre><code> */
+    .k  { color: #f472b6; }      /* keyword */
+    .s  { color: #6ee7b7; }      /* string */
+    .c  { color: #94a3b8; font-style: italic; } /* comment */
+    .n  { color: #fbbf24; }      /* number */
+    .f  { color: #93c5fd; }      /* function / method */
+    .b  { color: #a78bfa; }      /* builtin / decorator */
+    /* Output-side highlights */
+    .ok { color: var(--green); font-weight: 700; }
+    .hi { color: var(--coral); font-weight: 700; }
+    .mu { color: var(--muted); }
+    .takeaway {
+      margin-top: 14px;
+      padding: 14px 18px;
+      background: linear-gradient(90deg, var(--soft-coral), var(--soft-gold));
+      border-left: 4px solid var(--coral);
+      border-radius: 0 12px 12px 0;
+      font-size: 15.5px;
+      color: var(--navy);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .demo-eyebrow { color: var(--lav); }
+
+    @media (max-width: 900px) {
+      .demo-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="progress" id="progress"></div>
   <main class="deck" id="deck">
 
-    <section class="slide active" data-title="Title" data-time="0:00-0:40">
+    <section class="slide active" data-title="Title" data-time="0:00-0:30">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">Clinical decision support</span>
@@ -385,7 +462,7 @@
       <aside class="notes">Good morning. We built PCOS Pathfinder: a practical, explainable decision-support workflow for earlier PCOS detection. Our thesis is simple: clinical AI should not just predict a label. It should help clinicians decide who needs assessment, explain why, and avoid missing overlapping conditions. On the held-out split, the enhanced model reaches 0.953 ROC-AUC with 0.886 sensitivity, and everything is reproducible from thirteen notebooks.</aside>
     </section>
 
-    <section class="slide" data-title="Problem" data-time="0:40-1:35">
+    <section class="slide" data-title="Problem" data-time="0:30-1:10">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">The diagnostic gap</span>
@@ -405,7 +482,7 @@
       <aside class="notes">The challenge asks us to improve diagnostic accuracy in women's health. PCOS is a perfect core case because it is common, heterogeneous, and often delayed. A patient may first present with acne, hair growth, irregular bleeding, weight changes, or fertility concerns. Those signals are clinically meaningful, but they are often spread across visits and specialists. So our design goal is not just a high AUC. It is a workflow that fits the diagnostic pathway.</aside>
     </section>
 
-    <section class="slide" data-title="Workflow" data-time="1:35-2:30">
+    <section class="slide" data-title="Workflow" data-time="1:10-1:50">
       <div class="content">
         <span class="section-tag">Tiered workflow</span>
         <h2>A tiered pathway that matches real clinical escalation.</h2>
@@ -420,7 +497,7 @@
       <aside class="notes">The product is tiered. First, a frontline model uses low-friction data. Second, an enhanced model uses labs and ultrasound. Third, the app shows a diagnostic-completeness checklist so the clinician sees what evidence is present and what is missing. Fourth, the overlap prompt warns when the symptom pattern deserves broader gynecologic workup. That is why this is decision support, not automated diagnosis.</aside>
     </section>
 
-    <section class="slide" data-title="Data" data-time="2:30-3:35">
+    <section class="slide" data-title="Data" data-time="1:50-2:30">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">Data foundation</span>
@@ -444,7 +521,56 @@
       <aside class="notes">The data boundaries are as important as the model. We use the PCOS clinical data as the foundation. The endometriosis dataset is synthetic, so we only use it as a workflow prompt. The single-cell data supports biological rationale only. We also fixed a critical data-quality issue: the source says cycle length, but the range is zero to twelve days, so it is actually bleeding duration. That prevents out-of-distribution inputs like twenty-eight days.</aside>
     </section>
 
-    <section class="slide" data-title="Method" data-time="3:35-4:35">
+    <section class="slide" data-title="Demo 1: Data audit" data-time="2:30-3:10">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Demo 1 / notebook 01 / appendix</span>
+        <h2>Every silently coerced cell is logged, every dropped column is justified.</h2>
+        <div class="demo-row">
+          <div class="code-card">
+            <div class="card-label">scripts/create_training_notebooks.mjs &mdash; clean_pcos_dataframe</div>
+<pre><code><span class="c"># Drop columns that cannot defensibly contribute,</span>
+<span class="c"># and log every non-numeric coercion before dropping.</span>
+<span class="k">def</span> <span class="f">clean_pcos_dataframe</span>(df):
+    df = df.copy()
+    coercion_report = {}
+    <span class="k">for</span> col <span class="k">in</span> df.columns:
+        coerced = pd.<span class="f">to_numeric</span>(df[col], errors=<span class="s">"coerce"</span>)
+        new_nan = coerced.isna().<span class="f">sum</span>() - df[col].isna().<span class="f">sum</span>()
+        <span class="k">if</span> new_nan &gt; <span class="n">0</span>:
+            offenders = df.<span class="f">loc</span>[df[col].<span class="f">notna</span>() &amp; coerced.<span class="f">isna</span>(), col]
+            coercion_report[col] = {
+                <span class="s">"coerced_to_nan"</span>: <span class="f">int</span>(new_nan),
+                <span class="s">"examples"</span>: offenders.<span class="f">astype</span>(<span class="f">str</span>).<span class="f">unique</span>().<span class="f">tolist</span>()[:<span class="n">5</span>],
+            }
+        df[col] = coerced
+    df = df.<span class="f">drop</span>(columns=[c <span class="k">for</span> c <span class="k">in</span> DROP_COLUMNS <span class="k">if</span> c <span class="k">in</span> df.columns])
+    df.attrs[<span class="s">"coercion_report"</span>] = coercion_report
+    <span class="k">return</span> df
+
+DROP_COLUMNS = [<span class="s">"sl_no"</span>, <span class="s">"patient_file_no"</span>,
+                <span class="s">"blood_group"</span>, <span class="s">"marriage_status_yrs"</span>]</code></pre>
+          </div>
+          <div class="output-card">
+            <div class="card-label">Output &mdash; outputs/metrics/pcos_coercion_report.csv</div>
+<pre><span class="mu">PCOS shape: (541, 41)
+Dropped columns: ['sl_no', 'patient_file_no',
+                  'blood_group', 'marriage_status_yrs']
+Non-numeric values coerced to NaN:</span>
+  <span class="hi">ii_beta_hcg_miu_ml</span>: 1 cell(s); examples=['1.99.']
+  <span class="hi">amh_ng_ml</span>:           1 cell(s); examples=['a']
+
+<span class="mu">pcos_y_n</span>
+0    <span class="ok">364</span>
+1    <span class="ok">177</span>
+Name: count, dtype: int64</pre>
+          </div>
+        </div>
+        <div class="takeaway">Two stray data-quality issues caught and logged before they can bias a model. <code>blood_group</code> dropped because the codes 11–18 are not ordinal, and <code>marriage_status_yrs</code> dropped because it is clinically sensitive with no diagnostic signal.</div>
+      </div>
+      <aside class="notes">This is the cleaning step. Every column gets numeric-coerced and every non-numeric cell that drops to NaN is recorded with an example. That is how we caught the literal string "1.99." in the second beta-HCG column and the literal letter "a" in the AMH column. We drop identifiers, the blood-group ordinal codes, and the marriage-status column. The marriage-status drop is clinical safety, not just statistics.</aside>
+    </section>
+
+    <section class="slide" data-title="Method" data-time="3:10-3:50">
       <div class="content two">
         <div class="grid">
           <span class="section-tag">Model design</span>
@@ -470,7 +596,61 @@
       <aside class="notes">The key methodological point is that the threshold is not chosen on the test set. We select models using cross-validation on training data, then choose thresholds using out-of-fold probabilities from that training split. Only after that do we evaluate on the held-out test set. That keeps the final metrics honest. We also optimize for recall because this is triage: missing a PCOS case is more costly than sending someone for follow-up.</aside>
     </section>
 
-    <section class="slide" data-title="Results" data-time="4:35-5:35">
+    <section class="slide" data-title="Demo 2: Threshold CV" data-time="3:50-4:30">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Demo 2 / notebook 02 / appendix</span>
+        <h2>Action thresholds are chosen on training cross-validation. The test set is touched once.</h2>
+        <div class="demo-row">
+          <div class="code-card">
+            <div class="card-label">notebook 02 &mdash; cv_oof_probabilities + threshold sweep</div>
+<pre><code><span class="c"># 1. Out-of-fold probabilities on the TRAINING set only.</span>
+cv = <span class="f">StratifiedKFold</span>(n_splits=<span class="n">5</span>, shuffle=<span class="k">True</span>,
+                     random_state=RANDOM_STATE)
+oof_proba = <span class="f">cross_val_predict</span>(
+    best_model, X_train, y_train,
+    cv=cv, method=<span class="s">"predict_proba"</span>, n_jobs=-<span class="n">1</span>,
+)[:, <span class="n">1</span>]
+
+<span class="c"># 2. Sweep thresholds; pick the one with recall &gt;= 0.90</span>
+<span class="c">#    that also maximises specificity, precision, F1.</span>
+chosen, table = <span class="f">choose_high_recall_threshold</span>(
+    y_train, oof_proba, min_recall=<span class="n">0.90</span>,
+)
+threshold = <span class="f">float</span>(chosen[<span class="s">"threshold"</span>])
+
+<span class="c"># 3. Refit on FULL training data, evaluate ONCE on test.</span>
+best_model.<span class="f">fit</span>(X_train, y_train)
+metrics = <span class="f">evaluate_holdout</span>(best_model, X_test, y_test,
+                           threshold=threshold)</code></pre>
+          </div>
+          <div class="output-card">
+            <div class="card-label">Output &mdash; chosen threshold + held-out test</div>
+<pre><span class="mu">Best screening model: random_forest
+Chosen threshold (from training CV):</span>
+  threshold           <span class="ok">0.285</span>
+  recall              <span class="ok">0.901</span>
+  specificity         0.683
+  precision           0.535
+  f1                  0.669
+  balanced_accuracy   0.792
+
+<span class="mu">Holdout evaluation (touched ONCE):</span>
+  roc_auc       <span class="ok">0.896</span>
+  recall        <span class="ok">0.886</span>
+  specificity   0.685
+  precision     0.574
+  npv           0.926
+  f1            0.696
+  f2            0.799
+  confusion     [[63, 29], [5, 39]]</pre>
+          </div>
+        </div>
+        <div class="takeaway">Threshold is selected on out-of-fold training probabilities, then the held-out test split is evaluated exactly once. No optimistic bias.</div>
+      </div>
+      <aside class="notes">A common failure mode in clinical ML pitches is choosing the threshold on the same test set you then report metrics from. We avoid it. The threshold is picked from out-of-fold training probabilities. The held-out test set is evaluated exactly once, after the model is refit on the full training data. That is why the recall and specificity numbers you see in the results slide are honest.</aside>
+    </section>
+
+    <section class="slide" data-title="Results" data-time="4:30-5:10">
       <div class="content">
         <span class="section-tag">Held-out performance</span>
         <h2>Enhanced support preserves sensitivity and greatly improves precision.</h2>
@@ -482,16 +662,17 @@
             <tr><td>Endometriosis prompt</td><td>0.510</td><td>0.660</td><td>0.628</td><td>0.618</td><td>0.532</td><td>--</td><td>0.609</td></tr>
           </tbody>
         </table>
-        <div class="three">
+        <div class="four">
           <div class="card metric teal"><div class="value">39/44</div><div class="label">PCOS positives caught</div></div>
           <div class="card metric coral"><div class="value">+21.7</div><div class="label">Specificity points vs screening</div></div>
           <div class="card metric gold"><div class="value">0.943</div><div class="label">Enhanced NPV</div></div>
+          <div class="card metric"><div class="value">+0.057</div><div class="label">&Delta;AUC vs screening, 95% CI [+0.013, +0.105], p&asymp;0.015 (paired bootstrap, 2000 resamples)</div></div>
         </div>
       </div>
       <aside class="notes">Here is the headline. The screening model catches 39 of 44 PCOS-positive patients in the holdout cohort. The enhanced model keeps the same sensitivity, but raises specificity from 0.685 to 0.902 and precision from 0.574 to 0.812. That is the point of the tiered workflow: screen broadly first, then use labs and ultrasound to reduce false positives.</aside>
     </section>
 
-    <section class="slide" data-title="Rigor" data-time="5:35-6:30">
+    <section class="slide" data-title="Rigor" data-time="5:10-5:45">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">Uncertainty and calibration</span>
@@ -510,7 +691,58 @@
       <aside class="notes">Point estimates alone are not enough for a clinical prediction pitch. We added bootstrap confidence intervals, calibration, decision curve analysis, conformal prediction, subgroup audits, TabPFN benchmarking, and a Rotterdam comparison. This lets us say not only that the model performs well, but that we understand uncertainty, probability quality, action thresholds, and failure modes.</aside>
     </section>
 
-    <section class="slide" data-title="Utility" data-time="6:30-7:25">
+    <section class="slide" data-title="Demo 3: Bootstrap CIs" data-time="5:45-6:25">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Demo 3 / notebook 07 / appendix</span>
+        <h2>2000-resample paired bootstrap gives an AUC delta with a real interval, not just a difference of point estimates.</h2>
+        <div class="demo-row">
+          <div class="code-card">
+            <div class="card-label">notebook 07 &mdash; paired bootstrap loop</div>
+<pre><code>rng = np.random.<span class="f">default_rng</span>(seed=<span class="n">42</span>)
+n = <span class="f">len</span>(y_test)
+deltas = []
+<span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(<span class="n">2000</span>):
+    idx = rng.<span class="f">choice</span>(n, n, replace=<span class="k">True</span>)
+    yb  = y_test.<span class="f">values</span>[idx]
+    <span class="k">if</span> yb.<span class="f">sum</span>() == <span class="n">0</span> <span class="k">or</span> yb.<span class="f">sum</span>() == <span class="f">len</span>(yb):
+        <span class="k">continue</span>  <span class="c"># AUC undefined on single-class draw</span>
+    auc_s = <span class="f">roc_auc_score</span>(yb, screening_proba[idx])
+    auc_e = <span class="f">roc_auc_score</span>(yb, enhanced_proba[idx])
+    deltas.<span class="f">append</span>(auc_e - auc_s)
+
+deltas = np.<span class="f">asarray</span>(deltas)
+point = deltas.<span class="f">mean</span>()
+ci    = np.<span class="f">percentile</span>(deltas, [<span class="n">2.5</span>, <span class="n">97.5</span>])
+p_val = <span class="n">2</span> * <span class="f">min</span>((deltas &lt;= <span class="n">0</span>).<span class="f">mean</span>(),
+                  (deltas &gt;= <span class="n">0</span>).<span class="f">mean</span>())</code></pre>
+          </div>
+          <div class="output-card">
+            <div class="card-label">Output &mdash; outputs/metrics/holdout_bootstrap_cis.json</div>
+<pre>{
+  <span class="mu">"screening"</span>: {<span class="mu">"roc_auc"</span>: {
+    <span class="mu">"point"</span>: 0.8955,
+    <span class="mu">"ci_lo"</span>: 0.8300, <span class="mu">"ci_hi"</span>: 0.9515
+  }},
+  <span class="mu">"enhanced"</span>: {<span class="mu">"roc_auc"</span>: {
+    <span class="mu">"point"</span>: <span class="ok">0.9528</span>,
+    <span class="mu">"ci_lo"</span>: <span class="ok">0.9114</span>, <span class="mu">"ci_hi"</span>: <span class="ok">0.9852</span>
+  }},
+  <span class="mu">"auc_difference"</span>: {
+    <span class="mu">"point"</span>:               <span class="hi">+0.0573</span>,
+    <span class="mu">"ci_lo"</span>:               <span class="hi">+0.0130</span>,
+    <span class="mu">"ci_hi"</span>:               <span class="hi">+0.1051</span>,
+    <span class="mu">"se"</span>:                  0.0234,
+    <span class="mu">"p_value_two_sided"</span>:  <span class="hi">~0.015</span>
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="takeaway">The enhanced model is not just numerically better on this split — the paired bootstrap test on 2000 resamples puts the AUC advantage above zero with 95% confidence.</div>
+      </div>
+      <aside class="notes">Point estimates without intervals look like undergraduate work in a clinical-ML paper. So we ran a paired bootstrap: same 2000 resampled index vectors for both models, computed delta-AUC on each, and reported the 2.5 and 97.5 percentile of the differences plus the empirical two-sided p value. The enhanced model is above the screening model on AUC with 95 percent confidence, on this holdout. That is the kind of statement that survives peer review.</aside>
+    </section>
+
+    <section class="slide" data-title="Utility" data-time="6:25-7:05">
       <div class="content two">
         <div class="grid">
           <span class="section-tag">Clinical utility and safety</span>
@@ -530,7 +762,62 @@
       <aside class="notes">Decision curve analysis asks whether a model helps at clinically plausible thresholds. Our selected thresholds do. We also found an honest fairness risk: recall is lower in the normal-BMI group for screening. Rather than hide that, we added a warning to the prototype. The safety point is simple: average performance is not enough if a subgroup can be missed.</aside>
     </section>
 
-    <section class="slide" data-title="Explainability" data-time="7:25-8:15">
+    <section class="slide" data-title="Demo 5: Conformal" data-time="7:05-7:45">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Demo 5 / notebook 12 / appendix</span>
+        <h2>Split-conformal prediction sets give a distribution-free per-patient coverage guarantee.</h2>
+        <div class="demo-row">
+          <div class="code-card">
+            <div class="card-label">notebook 12 &mdash; split-conformal recipe</div>
+<pre><code><span class="c"># 1. Split the training set into proper-train and a calibration slice.</span>
+X_pt, X_cal, y_pt, y_cal = <span class="f">train_test_split</span>(
+    X_train, y_train, test_size=<span class="n">0.30</span>,
+    stratify=y_train, random_state=<span class="n">42</span>,
+)
+
+<span class="c"># 2. Refit a clone on PROPER-TRAIN only.</span>
+model = <span class="f">clone</span>(enhanced_artifact[<span class="s">"model"</span>])
+model.<span class="f">fit</span>(X_pt, y_pt)
+
+<span class="c"># 3. Nonconformity scores on calibration:  s = 1 - p_model(y_true | x).</span>
+p_cal  = model.<span class="f">predict_proba</span>(X_cal)
+scores = <span class="n">1</span> - p_cal[<span class="f">np.arange</span>(<span class="f">len</span>(y_cal)), y_cal.<span class="f">values</span>]
+
+<span class="c"># 4. q-hat at quantile ceil((n_cal + 1)(1 - alpha)) / n_cal.</span>
+alpha = <span class="n">0.10</span>
+n_cal = <span class="f">len</span>(scores)
+q_hat = <span class="f">np.quantile</span>(scores,
+                   <span class="f">np.ceil</span>((n_cal + <span class="n">1</span>) * (<span class="n">1</span> - alpha)) / n_cal)
+
+<span class="c"># 5. Prediction set per patient:  { y : 1 - p(y|x) &lt;= q_hat }.</span>
+p_te = model.<span class="f">predict_proba</span>(X_test)
+sets = (<span class="n">1</span> - p_te) &lt;= q_hat   <span class="c"># shape (n_test, 2)</span></code></pre>
+          </div>
+          <div class="output-card">
+            <div class="card-label">Output &mdash; outputs/metrics/conformal_coverage.json</div>
+<pre>{
+  <span class="mu">"target_coverage"</span>:     0.900,
+  <span class="mu">"q_hat"</span>:               <span class="ok">0.486</span>,
+  <span class="mu">"empirical_coverage"</span>:  <span class="ok">0.912</span>,
+  <span class="mu">"mean_set_size"</span>:       0.993,
+  <span class="mu">"singleton_fraction"</span>:  <span class="ok">0.993</span>,
+  <span class="mu">"doubleton_fraction"</span>:  0.000,
+  <span class="mu">"empty_fraction"</span>:      0.007,
+  <span class="mu">"worked_examples"</span>: [
+    {<span class="mu">"true"</span>: 1, <span class="mu">"p_pcos"</span>: 0.903,
+     <span class="mu">"set"</span>: [<span class="ok">1</span>],   <span class="mu">"covers"</span>: <span class="ok">true</span>},
+    {<span class="mu">"true"</span>: 0, <span class="mu">"p_pcos"</span>: 0.271,
+     <span class="mu">"set"</span>: [<span class="ok">0</span>],   <span class="mu">"covers"</span>: <span class="ok">true</span>}
+  ]
+}</pre>
+          </div>
+        </div>
+        <div class="takeaway">Target coverage 0.90, empirical 0.912 on the held-out set. The 0.7% empty sets are honest abstentions — patients the model refuses to call confidently.</div>
+      </div>
+      <aside class="notes">The last demo is the modern uncertainty layer. Split-conformal gives each patient a prediction set with a distribution-free coverage guarantee. We hold out 30% of the training set as a calibration slice, compute one minus the model probability of the true label on it, and pick q-hat at the appropriate quantile. The patient's prediction set is every label whose one-minus-probability is at or below q-hat. We targeted 90% coverage and observed 91.2% on the holdout. Empty sets count as abstentions — the model saying it does not know with high confidence.</aside>
+    </section>
+
+    <section class="slide" data-title="Explainability" data-time="7:45-8:20">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">Explainability at the patient level</span>
@@ -546,7 +833,54 @@
       <aside class="notes">Explainability is not an afterthought. The clinician sees the probability, the action threshold, the risk tier, and the top SHAP contributors. In the enhanced model, follicle counts rise to the top, which is clinically sensible. We also add a checklist that translates model output into next-step reasoning: what evidence supports PCOS, what evidence is missing, and what should not be overlooked.</aside>
     </section>
 
-    <section class="slide" data-title="Benchmarks" data-time="8:15-9:10">
+    <section class="slide" data-title="Demo 4: Patient SHAP" data-time="8:20-9:00">
+      <div class="content">
+        <span class="section-tag demo-eyebrow">Demo 4 / notebook 05 / appendix</span>
+        <h2>SHAP attributes every prediction to the patient's actual feature values.</h2>
+        <div class="demo-row">
+          <div class="code-card">
+            <div class="card-label">notebook 05 &mdash; shap_for_artifact (enhanced model, holdout positive)</div>
+<pre><code><span class="k">def</span> <span class="f">transform_through_preprocessing</span>(model, X_row):
+    X = X_row.copy()
+    <span class="k">for</span> _, transformer <span class="k">in</span> model.steps[:-<span class="n">1</span>]:
+        X = transformer.<span class="f">transform</span>(X)
+    <span class="k">return</span> X
+
+<span class="c"># Reproduce the train/test split, pull positive holdout case.</span>
+_, X_te, _, y_te = <span class="f">train_test_split</span>(
+    pcos[feats], pcos[<span class="s">"pcos_y_n"</span>],
+    test_size=<span class="n">0.25</span>, stratify=pcos[<span class="s">"pcos_y_n"</span>],
+    random_state=<span class="n">42</span>,
+)
+positive = pcos.<span class="f">loc</span>[X_te[y_te == <span class="n">1</span>].index[<span class="n">0</span>]].<span class="f">to_dict</span>()
+
+<span class="c"># TreeExplainer is fast and exact for the RF.</span>
+estimator   = artifact[<span class="s">"model"</span>].named_steps[<span class="s">"model"</span>]
+X_t         = <span class="f">transform_through_preprocessing</span>(artifact[<span class="s">"model"</span>],
+                                            pd.<span class="f">DataFrame</span>([positive])[feats])
+explainer   = shap.<span class="f">TreeExplainer</span>(estimator)
+shap_values = explainer.<span class="f">shap_values</span>(X_t)[<span class="n">0</span>, :, <span class="n">1</span>]</code></pre>
+          </div>
+          <div class="output-card">
+            <div class="card-label">Output &mdash; outputs/metrics/demo_positive_enhanced_shap.csv</div>
+<pre><span class="mu">Top SHAP drivers, known PCOS holdout case</span>
+<span class="mu">feature                value   log-odds Δ</span>
+follicle_no_r          15.0     <span class="hi">+0.213</span>  ↑ PCOS
+follicle_no_l          13.0     <span class="hi">+0.166</span>  ↑ PCOS
+skin_darkening_y_n      0.0     <span class="ok">−0.040</span>  ↓ PCOS
+weight_gain_y_n         0.0     <span class="ok">−0.036</span>  ↓ PCOS
+amh_ng_ml              16.4     <span class="hi">+0.034</span>  ↑ PCOS
+cycle_irregular_flag    1.0     <span class="hi">+0.028</span>  ↑ PCOS
+bmi                    27.3     <span class="hi">+0.022</span>  ↑ PCOS
+fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
+          </div>
+        </div>
+        <div class="takeaway">A clinician opens the patient record and sees exactly which findings pushed the prediction up or down. Demo cases come from <em>held-out</em> rows the model never trained on.</div>
+      </div>
+      <aside class="notes">This is the explainability slide that wins clinicians. For one held-out positive case, the model says PCOS. SHAP tells you why: high follicle counts on both ovaries are doing most of the work, with AMH and cycle irregularity contributing, and the absence of skin darkening and weight gain pulling slightly the other way. The patient comes from the test slice, so the explanation describes a row the model never trained on.</aside>
+    </section>
+
+    <section class="slide" data-title="Benchmarks" data-time="9:00-9:40">
       <div class="content two">
         <div class="grid">
           <span class="section-tag">External benchmarks</span>
@@ -566,7 +900,7 @@
       <aside class="notes">We did not stop at comparing random forest to logistic regression. We benchmarked against TabPFN, a modern small-tabular foundation model, and against a Rotterdam-style clinical rule. TabPFN slightly improves AUC, but the random forest keeps better recall and F2 at the selected action threshold and is easier to deploy. Against Rotterdam, enhanced ML catches more positives with only a small specificity cost. We also state the limitation: the dataset lacks testosterone.</aside>
     </section>
 
-    <section class="slide" data-title="Differential" data-time="9:10-9:55">
+    <section class="slide" data-title="Differential" data-time="9:40-10:15">
       <div class="content split">
         <div class="grid">
           <span class="section-tag">Differential diagnosis prompt</span>
@@ -585,7 +919,7 @@
       <aside class="notes">The differential module is deliberately framed as a prompt. Because the endometriosis dataset is synthetic, we do not claim clinical diagnostic validity. But it is still useful for the hackathon goal: when chronic pain, infertility, hormonal abnormality, and menstrual irregularity cluster together, the system reminds the clinician not to stop thinking after the PCOS risk score.</aside>
     </section>
 
-    <section class="slide" data-title="Implementation" data-time="9:55-10:55">
+    <section class="slide" data-title="Implementation" data-time="10:15-11:00">
       <div class="content">
         <span class="section-tag">Implementation path</span>
         <h2>Submission-ready implementation, not a concept sketch.</h2>
@@ -607,7 +941,7 @@
       <aside class="notes">This is feasible because it is already implemented. The Streamlit app loads saved artifacts, the notebooks reproduce the metrics, and the outputs are packaged for review. But we do not pretend this is ready for clinical deployment. The next step is external validation, then a silent pilot, then prospective evaluation. That balance of ambition and restraint is important.</aside>
     </section>
 
-    <section class="slide" data-title="Impact" data-time="10:55-12:00">
+    <section class="slide" data-title="Impact" data-time="11:00-12:00">
       <div class="content two">
         <div class="grid">
           <span class="section-tag">Patient and system impact</span>
@@ -628,7 +962,8 @@
       <aside class="notes">The public-health value is earlier triage. The low-resource value is that the first model does not require labs or ultrasound. The safety value is that the system explains itself and states what it does not know. And the equity value is honesty: we found a subgroup risk and built a warning around it, rather than presenting a polished but unsafe story.</aside>
     </section>
 
-  </main>
+
+    </main>
 
   <div class="nav">
     <div class="controls">
