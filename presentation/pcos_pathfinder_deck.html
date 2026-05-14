@@ -1144,7 +1144,6 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
 
     <section class="slide" data-title="App backup: high-risk case" data-time="backup / Q&A">
       <div class="content">
-        <span class="section-tag demo-eyebrow">Static app preview &middot; backup &middot; no server required</span>
         <h2>What the clinician sees &mdash; held-out PCOS-positive patient.</h2>
         <div class="app-frame">
           <div class="app-tabs">
@@ -1250,7 +1249,6 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
 
     <section class="slide" data-title="App backup: low-risk case" data-time="backup / Q&A">
       <div class="content">
-        <span class="section-tag demo-eyebrow">Static app preview &middot; backup &middot; no server required</span>
         <h2>What the clinician sees &mdash; held-out non-PCOS patient.</h2>
         <div class="app-frame">
           <div class="app-tabs">
@@ -1379,84 +1377,126 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
 
     const explanations = {
       'Title': [
-        'This opening slide introduces PCOS Pathfinder. It is a tool that helps clinicians spot possible PCOS earlier and decide what to check next. It does not claim to diagnose a patient by itself.',
-        'The three numbers are the quick proof points: the stronger model performs well on the held-out test data, it catches most PCOS-positive patients, and the work is reproducible from the project notebooks.'
+        'This first slide introduces PCOS Pathfinder as a clinical decision-support tool. That means it is not trying to replace a doctor or diagnose a patient by itself. It is meant to help a clinician notice possible PCOS earlier and decide what information to collect next.',
+        'PCOS stands for polycystic ovary syndrome. It is a hormonal and reproductive health condition that can involve irregular periods, excess androgen-related symptoms such as acne or hair growth, metabolic changes, and ultrasound findings in the ovaries. Because it can show up in several different ways, patients can be missed or diagnosed late.',
+        'The three headline numbers summarize the project. The enhanced model has strong performance on the held-out test set, the sensitivity number means it catches most patients who truly have PCOS in that test set, and the 13 notebooks mean the analysis is reproducible rather than just a one-off demo.'
       ],
       'Problem': [
-        'This slide explains why PCOS is hard to diagnose. PCOS can show up as irregular periods, acne, hair growth, weight changes, fertility problems, hormone changes, or ultrasound findings. No single symptom tells the whole story.',
-        'The main problem is that these clues can be spread across different appointments. The project is trying to help clinicians combine the clues earlier instead of waiting until the pattern becomes obvious much later.'
+        'This slide explains the clinical problem from scratch. PCOS is not diagnosed from one simple symptom. A patient might have irregular periods, acne, hair growth, weight changes, fertility problems, blood sugar issues, hormone changes, or ultrasound findings. Some patients have several of these; others have only a few.',
+        'That makes PCOS easy to miss. A primary-care doctor might see acne and irregular periods, a gynecologist might later see fertility concerns, and an endocrinologist might later see hormone or metabolic results. If the clues are spread out over time, nobody sees the whole pattern early.',
+        'The point of the project is to help combine these scattered clues into a structured risk assessment. The model is useful because it can consider many small pieces of patient information together, then explain which pieces pushed the risk higher or lower.',
+        'The slide also mentions overlap risk. Conditions such as endometriosis can share parts of the symptom picture, especially pain, infertility, or menstrual problems. A safe tool should not make clinicians tunnel-vision on PCOS alone.'
       ],
       'Workflow': [
-        'This slide shows the product flow. First, the tool can screen using simple information like symptoms and basic vitals. Later, if labs and ultrasound are available, the enhanced model gives a stronger assessment.',
-        'The checklist is a safety layer: it reminds the clinician what evidence is present, what evidence is missing, and what other conditions may need workup. The endometriosis prompt is only a reminder to think broader, not a diagnosis.'
+        'This slide shows the full product journey. The project is tiered because clinical information usually arrives in stages. At the first visit, a clinician may only know symptoms and basic vitals. Later, the clinician may order lab tests or ultrasound, which provide stronger evidence.',
+        'Step 1 is frontline screening. It uses lower-burden information such as age, BMI, cycle pattern, bleeding duration, symptoms, random blood sugar, and blood pressure. This is intended for early triage in primary care, telehealth, or outreach settings.',
+        'Step 2 is enhanced diagnostic support. Once labs and ultrasound are available, the model can use information such as AMH, FSH, LH, follicle counts, follicle sizes, and endometrium thickness. This richer feature set reduces false alarms while keeping high sensitivity.',
+        'Step 3 is the checklist. It translates model output into clinical reasoning: what evidence is present, what evidence is missing, and whether the patient needs metabolic follow-up or caution for lean PCOS.',
+        'Step 4 is the differential prompt. This is a reminder to consider overlapping gynecologic conditions when the symptom pattern suggests broader workup. It is deliberately a prompt, not a separate diagnosis.'
       ],
       'Data': [
-        'This slide explains what data the project uses and where the limits are. The real PCOS clinical dataset is the main dataset. The endometriosis dataset is synthetic, so it is only used for a cautious overlap prompt.',
-        'The most important data-cleaning point is that a column labelled cycle length actually behaves like bleeding duration. The app uses the safer label so nobody enters a normal 28-day menstrual cycle value into a field where the training data only ranges from 0 to 12.'
+        'This slide explains the data sources and the limits of what can be claimed from them. The main PCOS dataset is the foundation for the PCOS models. It has 541 clinical records, including both PCOS-positive and non-PCOS patients.',
+        'The endometriosis dataset is synthetic, meaning it was generated to look realistic but is not the same as real patient data. Because of that, the project uses it only to demonstrate a symptom-overlap prompt. It would be unsafe to claim that this module clinically diagnoses endometriosis.',
+        'The single-cell archives are also handled conservatively. The project checks whether known PCOS-related genes appear in one sampled feature list, which gives biological context. It does not perform full single-cell analysis, clustering, differential expression, or biomarker discovery.',
+        'The most important data-cleaning correction is the field labelled cycle length. A normal menstrual cycle is often around 28 days, but the source column ranges from 0 to 12. That strongly suggests the column is actually the number of bleeding days, so the app relabels it as duration of menses bleeding. This prevents users from entering a value that the model never saw during training.',
+        'The slide also explains feature exclusion. Identifiers are dropped because they do not describe health. Blood group is dropped because the dataset stores it as ordinal-looking codes that do not have a meaningful order. Marriage-status years is dropped because it is clinically sensitive and not a defensible diagnostic feature. Lifestyle proxies are excluded from screening because they can introduce stigma and bias.'
       ],
       'Demo 1: Data audit': [
-        'This code slide shows how the project cleans the raw spreadsheet before modelling. In plain language, the code standardizes column names, converts values into numbers, records suspicious values, and removes columns that should not be used.',
-        'The audit table proves the cleaning was not silent. For example, the dataset contained values like 1.99. and a, which are not clean numbers. The notebook logs them so reviewers can see exactly what happened.'
+        'This is a technical demo slide, but the simple idea is quality control. Before training any model, the raw spreadsheet has to be cleaned into consistent numbers and column names. If that step is sloppy, the model can learn from mistakes in the data rather than real clinical patterns.',
+        'The code standardizes column names, converts values into numeric form, records values that cannot be converted, and removes columns that should not be used. Recording the bad values matters because it makes the cleaning transparent instead of silently changing the dataset.',
+        'The audit table shows two examples of messy data: one beta-HCG value written as 1.99. with an extra period, and one AMH value written as the letter a. These are not valid numbers. The notebook logs them so the team can explain exactly how the data was handled.',
+        'This slide is useful in Q&A because it shows scientific discipline. The project is not just training a model and hoping for the best. It documents what was changed, why it was changed, and what was left out for safety reasons.'
       ],
       'Method': [
-        'This slide explains how the models were trained fairly. The data is split into training and held-out test data. The model learns and chooses thresholds only from the training side.',
-        'The held-out test data is saved for the final check. That matters because using the test set to tune the model would make the reported performance look better than it really is.'
+        'This slide explains how the modelling was designed to be fair and honest. The data is split into a training portion and a held-out test portion. The model learns from training data, and the held-out data is saved for final evaluation.',
+        'The key idea is that the model should not peek at the final test answers while decisions are still being made. If the team used the test set to choose the best threshold, the final numbers could look artificially good. That would be test leakage.',
+        'The project avoids this by using cross-validation inside the training data. Cross-validation means the training data is split into folds, the model trains on some folds, predicts on the fold it did not train on, and repeats this process. Those out-of-fold predictions are used to choose the threshold.',
+        'The threshold is recall-first because this is a screening-style tool. Recall means the fraction of true PCOS cases that the model catches. In this clinical setting, missing a possible PCOS case can be more harmful than sending someone for follow-up.'
       ],
       'Demo 2: Threshold CV': [
-        'This code slide explains how the action threshold is chosen. A threshold is the probability cutoff where the model changes from low risk to action needed.',
-        'The important point is that the threshold is selected using cross-validation inside the training data. The final test set is used only once afterward, which makes the result more honest.'
+        'This demo slide explains threshold selection. Most models output a probability, such as 0.28 or 0.80. A threshold is the cutoff where the tool changes from saying below action level to saying action is needed.',
+        'Choosing that cutoff is important. A low threshold catches more true cases but creates more false positives. A high threshold creates fewer false positives but can miss patients who need care. The project chooses thresholds to prioritize sensitivity while still considering specificity and precision.',
+        'The code uses cross-validated training predictions to choose the threshold. This means the threshold is selected using predictions on training examples that were not used to fit that fold of the model. That gives a more realistic estimate than using predictions on examples the model has already seen.',
+        'The held-out test set is only evaluated after the threshold is fixed. This is why the reported recall and specificity are more trustworthy.'
       ],
       'Results': [
-        'This slide is the main performance summary. AUC measures how well the model separates PCOS from non-PCOS across thresholds. Recall measures how many true PCOS cases the model catches.',
-        'The screening model catches 39 out of 44 PCOS-positive holdout patients. The enhanced model keeps the same recall but greatly improves specificity and precision, meaning it produces fewer false alarms once labs and ultrasound are available.'
+        'This slide is the main model-performance summary. AUC is a broad measure of how well the model separates PCOS-positive from non-PCOS patients across possible thresholds. AUC closer to 1.0 is better; 0.5 would be no better than random ranking.',
+        'Recall, also called sensitivity, measures how many actual PCOS cases the model catches. In the holdout set there are 44 PCOS-positive patients, and the screening model catches 39 of them. That is why the slide shows 39 out of 44.',
+        'Specificity measures how many non-PCOS patients are correctly marked as not PCOS. Precision, also called PPV, measures how often a positive model flag is actually PCOS. NPV measures how often a low-risk result is truly non-PCOS.',
+        'The main clinical story is that the enhanced model keeps the same recall as screening but improves specificity and precision. That means the first tier can cast a wide net, and the second tier can use labs and ultrasound to reduce false alarms.',
+        'The endometriosis prompt has lower performance and should be described carefully. It is included to demonstrate broader differential thinking, not as a validated endometriosis diagnostic model.'
       ],
       'Rigor': [
-        'This slide explains the extra checks that make the results more trustworthy. Instead of reporting only one score, the project estimates uncertainty, checks whether probabilities are well calibrated, and tests how the model behaves when it is unsure.',
-        'Calibration means that a predicted probability should behave like a real probability. Conformal prediction adds a way for the model to say, in effect, I am not confident enough, which is safer than forcing an answer.'
+        'This slide explains why the project goes beyond one accuracy table. In clinical prediction, a single score is not enough. We also need to know how uncertain the score is, whether the probabilities mean what they claim, and what happens when the model is unsure.',
+        'Uncertainty is handled with bootstrap confidence intervals. Instead of pretending one holdout result is exact, the project resamples the holdout set many times to estimate a plausible range for each metric.',
+        'Calibration asks whether model probabilities behave like real probabilities. For example, if a model gives many patients around 70 percent risk, about 70 percent of similar patients should actually be positive. Platt scaling improves the enhanced model probability quality.',
+        'Conformal prediction is an uncertainty wrapper. Rather than forcing one answer every time, it can produce a prediction set. If the model is not confident enough, the safe workflow is to treat that as an abstention or a need for clinician review.'
       ],
       'Demo 3: Bootstrap CIs': [
-        'This code slide explains confidence intervals. A confidence interval is a range that shows how much the score might move if the holdout sample were slightly different.',
-        'The bootstrap repeats the evaluation 2000 times on resampled versions of the holdout set. That gives a range for the difference between the screening and enhanced models instead of only one point estimate.'
+        'This code slide explains bootstrap confidence intervals in a practical way. Imagine the holdout test set is only one possible sample of patients. If we had a slightly different sample, the AUC, recall, and specificity might shift.',
+        'The bootstrap simulates this by repeatedly drawing new samples from the holdout set with replacement. With replacement means some patients may appear more than once in a resampled version and others may not appear. This is a standard way to estimate metric variability when the dataset is small.',
+        'The project repeats this 2000 times and computes the metrics each time. The middle of those results gives the point estimate, and the lower and upper percentiles give the confidence interval.',
+        'The paired part means the screening and enhanced models are compared on the same resampled patients each time. That is fairer than comparing them on unrelated samples, because it focuses on how the two models differ on the same cases.'
       ],
       'Utility': [
-        'This slide asks whether the model is useful for real decisions, not just accurate on paper. Decision curve analysis compares the model against simple options like treating everyone or treating no one.',
-        'The subgroup section is a safety check. The model is weaker for normal-BMI patients in the screening setting, so the prototype warns users not to dismiss lean PCOS when symptoms continue.'
+        'This slide explains usefulness, not just accuracy. A model can have a nice AUC but still be unhelpful if it does not improve decisions at the thresholds clinicians would actually use.',
+        'Decision curve analysis compares the model with simple strategies such as treating everyone as high risk or treating nobody as high risk. If the model has higher net benefit at relevant thresholds, it is adding decision value.',
+        'The subgroup section is about safety. The screening model performs less well for normal-BMI patients than for some other BMI categories. That matters because PCOS can occur in patients who are not overweight, sometimes called lean PCOS.',
+        'The prototype turns this audit into a warning: if a normal-BMI patient has persistent symptoms, a low screening score should not be used as the only reason to stop evaluation. This is a practical way to convert a fairness finding into safer workflow design.'
       ],
       'Demo 5: Conformal': [
-        'This code slide explains the uncertainty feature in simple terms. The model can return a set of possible labels instead of pretending it is always certain.',
-        'If the prediction set is empty, that means the model is not confident enough under the conformal rule. In a clinical workflow, that should become a review or follow-up prompt, not a forced answer.'
+        'This code slide explains conformal prediction. A normal classifier usually returns one predicted label, such as PCOS or not PCOS. Conformal prediction can return a set of labels that are statistically designed to include the true label at a chosen coverage rate.',
+        'In this project, the target coverage is 90 percent. That means the method is designed so that, over many similar patients, the true label should be included in the prediction set about 90 percent of the time.',
+        'The code creates a calibration split, computes how surprising each calibration prediction was, and then sets a cutoff called q-hat. For a new patient, labels whose surprise score is below that cutoff are included in the prediction set.',
+        'If the set contains one label, the model has a clear answer under the conformal rule. If the set is empty, the model is effectively saying that none of the labels meet the confidence rule. In a clinical interface, that should become a review prompt rather than a forced yes or no.'
       ],
       'Explainability': [
-        'This slide shows how a clinician can understand why the model made a prediction. SHAP is a method that breaks the prediction into feature contributions, showing which patient details pushed risk up or down.',
-        'The checklist makes the explanation more clinical. It turns the model output into questions a clinician already understands: Is there cycle irregularity? Are there hyperandrogenic symptoms? Are ultrasound findings present? Are metabolic follow-ups needed?'
+        'This slide explains how the model answer becomes understandable. A black-box probability is hard for clinicians to trust because it does not explain what patient details mattered.',
+        'SHAP is an explanation method that divides the prediction into feature contributions. In simple terms, it asks: which values pushed this patient toward higher PCOS risk, and which values pushed risk downward?',
+        'For the enhanced model, clinically meaningful ultrasound features such as follicle counts often become important. That is reassuring because the model is using features that align with PCOS biology and diagnostic reasoning.',
+        'The checklist adds a second layer of explanation. It translates the risk score into familiar clinical questions: is cycle irregularity present, are hyperandrogenic symptoms present, is ovarian morphology present, and is metabolic follow-up needed?'
       ],
       'Demo 4: Patient SHAP': [
-        'This demo slide walks through one patient-level explanation. The case is from the held-out test data, meaning the model did not train on that patient.',
-        'The explanation shows that follicle counts and related clinical signals drive the high-risk prediction. This is reassuring because those are clinically meaningful PCOS features, not random or stigmatizing proxy variables.'
+        'This demo slide walks through a specific patient from the held-out test set. That matters because the model did not train on this patient. The explanation is therefore not just memorizing a training example.',
+        'The SHAP table shows which patient values pushed the risk up or down. In the high-risk example, follicle counts and related ovarian morphology signals push the model toward PCOS. These are clinically relevant signals.',
+        'Some features may push in the opposite direction. That is normal. A real patient is rarely a perfect textbook case. The value of the explanation is that teammates can see the model weighing multiple pieces of evidence rather than reacting to one variable only.',
+        'When presenting this slide, the plain-language message is: the model can show its reasoning at the patient level, and the reasoning is understandable enough for a clinician to question or verify.'
       ],
       'Benchmarks': [
-        'This slide compares the project to two reference points. TabPFN is a modern machine-learning model for small tables. Rotterdam is a clinical rule doctors use for PCOS diagnosis.',
-        'The point is not that one method is perfect. TabPFN slightly improves AUC but is less practical for this deployment story. The Rotterdam comparison shows the enhanced model catches more PCOS cases, while the slide also admits the dataset lacks testosterone.'
+        'This slide compares PCOS Pathfinder with two useful reference points. The first is TabPFN, a modern machine-learning model designed for small tabular datasets. The second is a Rotterdam-style clinical rule, which reflects how PCOS criteria are often structured clinically.',
+        'TabPFN slightly improves AUC, which shows the dataset is learnable by strong modern methods. But deployment is not only about AUC. At the selected clinical thresholds, the Random Forest keeps better recall and F2, runs faster on CPU, and is easier to explain and package.',
+        'The Rotterdam comparison is important because it anchors the model against clinical logic instead of only against other algorithms. The enhanced model catches more PCOS-positive patients, but with a small specificity cost.',
+        'The limitation is explicit: the dataset does not include serum testosterone. Testosterone is an important biochemical marker for hyperandrogenism, so the Rotterdam-style benchmark must approximate that criterion using available features. That should be stated openly.'
       ],
       'Differential': [
-        'This slide explains the endometriosis-overlap module. Some symptoms can overlap across gynecologic conditions, so a PCOS tool should not make clinicians stop thinking about other possibilities.',
-        'Because the endometriosis data is synthetic, the module is not a diagnostic claim. It is a reminder: if pain, infertility, hormone abnormality, and menstrual irregularity appear together, consider broader workup.'
+        'This slide explains why the endometriosis-overlap module exists. PCOS is the required core condition, but patients with menstrual or fertility symptoms may also have other gynecologic conditions. A good workflow should reduce tunnel vision.',
+        'The module uses features such as chronic pain, infertility, hormone abnormality, menstrual irregularity, BMI, and age. If those features cluster in a way that resembles endometriosis-overlap risk, the app prompts broader workup.',
+        'Because the endometriosis data is synthetic, this part of the system is intentionally modest. It does not say the patient has endometriosis. It says the clinician should consider whether more evaluation is appropriate.',
+        'The simple teammate explanation is: this module is a safety reminder, not a second diagnostic model. It helps keep the clinician from stopping too early after seeing a PCOS risk score.'
       ],
       'Implementation': [
-        'This slide shows that the project is not just a concept. There is a working Streamlit app, saved model files, executed notebooks, exported metrics, figures, a model card, and packaging instructions.',
-        'The bottom table explains what would be needed before real clinical use: validate on outside data, run a silent pilot beside usual care, and then do a prospective study before any deployment claim.'
+        'This slide shows that the project is implemented, not just imagined. The Streamlit app loads saved model files and presents the workflow in a clinician-facing interface.',
+        'The repository also contains the full analysis trail: executed notebooks, deterministic notebook-generation scripts, metric files, plots, cleaned data, saved models, model card, README, and packaging checklist.',
+        'The deployment table is about responsible next steps. Before real use, the model should be tested on data from other clinics or populations. Then it should be run silently beside usual care, meaning it records what it would have recommended without changing treatment yet.',
+        'Only after external validation and a prospective study should anyone claim deployment readiness. This is an important safety message because hackathon prototypes can be promising without being ready for clinical use.'
       ],
       'Impact': [
-        'This closing slide explains why the project matters. The goal is earlier, clearer next steps for patients who might otherwise wait years for PCOS assessment.',
-        'The key takeaway is that PCOS Pathfinder is decision support. It helps clinicians decide what to check next, explains the evidence, warns about uncertainty and subgroup risk, and keeps the final diagnosis in clinical hands.'
+        'This closing slide explains the value of the project. The goal is earlier, clearer next steps for people who might otherwise wait years for PCOS assessment.',
+        'For primary care and telehealth, the screening model can work with information that is available early. For gynecology or endocrinology, the enhanced model can use lab and ultrasound information to make the assessment more specific.',
+        'For patient safety, the system does not hide uncertainty. It includes explanations, calibration checks, conformal abstention, subgroup warnings, and clear limitations. This makes the tool more trustworthy than a plain risk score.',
+        'The final message is that PCOS Pathfinder is decision support. It helps clinicians decide what to check next, explains why, and keeps diagnosis in human clinical hands.'
       ],
       'App backup: high-risk case': [
-        'This backup slide is a static version of the app for a high-risk patient, useful if the live Streamlit demo fails. It shows what a clinician would see after entering patient information.',
-        'Both PCOS models show high risk, the explanation points to ovarian morphology and related features, and the checklist shows multiple PCOS-supporting signals. This is the strongest example of the full workflow.'
+        'This backup slide is a static screenshot-style version of the app for a PCOS-positive holdout patient. It is included so the team can still show the prototype experience if the live Streamlit app fails during the presentation.',
+        'The patient is high risk on both the screening and enhanced models. The model explanation points to ovarian morphology and related clinical signals, which makes sense for PCOS.',
+        'The checklist also supports PCOS: several clinical boxes are present, such as ovulatory dysfunction, hyperandrogenism signal, ovarian morphology prompt, and metabolic follow-up prompt. This turns the model output into a clinical reasoning pathway.',
+        'The simple way to explain this slide is: here is what the clinician would see for a patient where the system is strongly concerned and can explain why.'
       ],
       'App backup: low-risk case': [
-        'This backup slide shows the opposite: a non-PCOS holdout patient. One lab value, AMH, may look concerning by itself, but the full pattern is not PCOS-like.',
-        'The model integrates the whole picture: regular cycle pattern, low follicle counts, and no checklist boxes ticked. This shows the system is not simply reacting to one isolated lab value.'
+        'This backup slide shows a non-PCOS holdout patient. It is useful because it demonstrates that the app can also avoid overreacting when one feature looks concerning.',
+        'The example mentions AMH being elevated. AMH can be associated with ovarian reserve and PCOS-related patterns, so a clinician might notice it. But AMH alone should not decide the whole case.',
+        'The rest of the pattern is low risk: regular cycle pattern, low follicle counts, and no checklist boxes ticked. The model integrates the whole set of information rather than making a decision from one lab value.',
+        'The simple teammate explanation is: this slide shows restraint. The tool does not flag PCOS just because one number is high; it weighs the broader clinical picture.'
       ]
     };
 
