@@ -34,8 +34,36 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.fonts import addMapping
 from reportlab.pdfgen.canvas import Canvas
 from PIL import Image as PILImage
+
+import matplotlib
+
+# Register DejaVu Sans (bundled with matplotlib) for the body font so that
+# Greek letters, the proper minus sign, combining accents, and other glyphs
+# missing from reportlab's bundled Helvetica render correctly instead of as
+# tofu boxes. We register Regular / Bold / Oblique / BoldOblique so the
+# Paragraph parser can switch via <b>/<i> tags.
+_MPL_FONTS = Path(matplotlib.get_data_path()) / "fonts" / "ttf"
+for _name, _file in [
+    ("DejaVuSans", "DejaVuSans.ttf"),
+    ("DejaVuSans-Bold", "DejaVuSans-Bold.ttf"),
+    ("DejaVuSans-Oblique", "DejaVuSans-Oblique.ttf"),
+    ("DejaVuSans-BoldOblique", "DejaVuSans-BoldOblique.ttf"),
+    ("DejaVuSansMono", "DejaVuSansMono.ttf"),
+]:
+    pdfmetrics.registerFont(TTFont(_name, str(_MPL_FONTS / _file)))
+addMapping("DejaVuSans", 0, 0, "DejaVuSans")
+addMapping("DejaVuSans", 1, 0, "DejaVuSans-Bold")
+addMapping("DejaVuSans", 0, 1, "DejaVuSans-Oblique")
+addMapping("DejaVuSans", 1, 1, "DejaVuSans-BoldOblique")
+
+BODY_FONT = "DejaVuSans"
+BODY_FONT_BOLD = "DejaVuSans-Bold"
+MONO_FONT = "DejaVuSansMono"
 
 ROOT = Path(__file__).resolve().parent.parent
 REPORT_DIR = ROOT / "report"
@@ -59,7 +87,7 @@ styles = getSampleStyleSheet()
 body_style = ParagraphStyle(
     "Body",
     parent=styles["BodyText"],
-    fontName="Helvetica",
+    fontName=BODY_FONT,
     fontSize=10,
     leading=14.2,
     textColor=BODY_DARK,
@@ -83,7 +111,7 @@ caption_style = ParagraphStyle(
 h1_style = ParagraphStyle(
     "H1",
     parent=styles["Heading1"],
-    fontName="Helvetica-Bold",
+    fontName=BODY_FONT_BOLD,
     fontSize=15,
     leading=19,
     textColor=ACCENT,
@@ -94,7 +122,7 @@ h1_style = ParagraphStyle(
 h2_style = ParagraphStyle(
     "H2",
     parent=styles["Heading2"],
-    fontName="Helvetica-Bold",
+    fontName=BODY_FONT_BOLD,
     fontSize=11.5,
     leading=15,
     textColor=ACCENT_SOFT,
@@ -105,7 +133,7 @@ h2_style = ParagraphStyle(
 title_style = ParagraphStyle(
     "Title",
     parent=styles["Title"],
-    fontName="Helvetica-Bold",
+    fontName=BODY_FONT_BOLD,
     fontSize=26,
     leading=30,
     textColor=ACCENT,
@@ -115,7 +143,7 @@ title_style = ParagraphStyle(
 subtitle_style = ParagraphStyle(
     "Subtitle",
     parent=styles["Heading2"],
-    fontName="Helvetica",
+    fontName=BODY_FONT,
     fontSize=13,
     leading=17,
     textColor=BODY_DARK,
@@ -143,7 +171,7 @@ abstract_body = ParagraphStyle(
     spaceAfter=14,
     textColor=BODY_DARK,
 )
-code_style = ParagraphStyle("Code", parent=body_style, fontName="Courier", fontSize=9, leading=12.5)
+code_style = ParagraphStyle("Code", parent=body_style, fontName=MONO_FONT, fontSize=9, leading=12.5)
 
 cell_style = ParagraphStyle(
     "Cell",
@@ -158,17 +186,20 @@ cell_style = ParagraphStyle(
 )
 cell_header_style = ParagraphStyle(
     "CellHeader",
-    parent=cell_style,
-    fontName="Helvetica-Bold",
-    fontSize=8.8,
+    parent=body_style,  # not cell_style; we do NOT want CJK break-anywhere wrap on headers
+    fontName=BODY_FONT_BOLD,
+    fontSize=8.2,
+    leading=10.5,
     alignment=TA_CENTER,
     textColor=TABLE_HEADER_TEXT,
-    wordWrap=None,  # short headers should never break inside a word
+    spaceAfter=0,
+    spaceBefore=0,
+    # wordWrap is intentionally unset; we want word-boundary breaks for short headers.
 )
 path_cell_style = ParagraphStyle(
     "Path",
     parent=cell_style,
-    fontName="Courier",
+    fontName=MONO_FONT,
     fontSize=8.2,
     leading=10.5,
 )
@@ -260,7 +291,7 @@ def styled_table(header, rows, col_widths=None, alt_row_bg=True, wrap_threshold=
     style = [
         ("BACKGROUND", (0, 0), (-1, 0), TABLE_HEADER),
         ("TEXTCOLOR", (0, 0), (-1, 0), TABLE_HEADER_TEXT),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, 0), (-1, 0), BODY_FONT_BOLD),
         ("FONTSIZE", (0, 0), (-1, -1), 9),
         ("ALIGN", (0, 0), (-1, 0), "CENTER"),
         ("ALIGN", (0, 1), (-1, -1), "LEFT"),
@@ -291,7 +322,7 @@ def numeric_table(header, rows, col_widths=None, wrap_threshold=25):
     style = [
         ("BACKGROUND", (0, 0), (-1, 0), TABLE_HEADER),
         ("TEXTCOLOR", (0, 0), (-1, 0), TABLE_HEADER_TEXT),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, 0), (-1, 0), BODY_FONT_BOLD),
         ("FONTSIZE", (0, 0), (-1, -1), 9),
         ("ALIGN", (0, 0), (-1, 0), "CENTER"),
         ("ALIGN", (0, 1), (0, -1), "LEFT"),
@@ -354,7 +385,7 @@ def draw_header_footer(canvas: Canvas, doc):
     canvas.setLineWidth(0.5)
     # footer rule
     canvas.line(2 * cm, 1.5 * cm, A4[0] - 2 * cm, 1.5 * cm)
-    canvas.setFont("Helvetica", 8.5)
+    canvas.setFont(BODY_FONT, 8.5)
     canvas.setFillColor(ACCENT)
     canvas.drawString(2 * cm, 1.1 * cm, "PCOS Pathfinder — Technical Report")
     canvas.setFillColor(MUTED)
@@ -645,7 +676,7 @@ def build():
             ["Enhanced, t=0.380 (chosen)", "0.886", "0.902", "0.812", "0.943", "0.848", "0.871", "83, 9, 5, 39"],
             ["Enhanced, t=0.500 (balanced)", "0.818", "0.957", "0.900", "0.917", "0.857", "0.833", "88, 4, 8, 36"],
         ],
-        col_widths=[4.5 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 1.4 * cm, 3.1 * cm],
+        col_widths=[4.2 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 2.8 * cm],
         wrap_threshold=20,
     ))
     story.append(Spacer(1, 0.15 * cm))
@@ -706,15 +737,15 @@ def build():
         "Procedure: split the 405-row training set into proper-train (n=283) and calibration (n=122); refit a "
         "clone of the enhanced random-forest pipeline on proper-train; compute nonconformity scores "
         "s<sub>i</sub> = 1 &minus; p<sub>model</sub>(y<sub>i</sub> | x<sub>i</sub>) on the calibration set; pick "
-        "q&#770; at quantile (1 &minus; &alpha;) of the calibration scores (we use &alpha; = 0.10 for 90% target "
-        "coverage). For each holdout patient, the set is {y : 1 &minus; p(y | x) &le; q&#770;}."
+        "q-hat at quantile (1 &minus; &alpha;) of the calibration scores (we use &alpha; = 0.10 for 90% target "
+        "coverage). For each holdout patient, the set is {y : 1 &minus; p(y | x) &le; q-hat}."
     ))
     story.append(numeric_table(
         ["Quantity", "Value"],
         [
             ["Target coverage (1 &minus; &alpha;)", "0.900"],
             ["Empirical coverage on holdout", "0.912"],
-            ["Threshold q̂", "0.486"],
+            ["Threshold q-hat", "0.486"],
             ["Mean prediction-set size", "0.99"],
             ["Singleton sets", "99.3%"],
             ["Doubleton (uncertain) sets", "0.0%"],
@@ -986,8 +1017,192 @@ def build():
         valign="TOP",
     ))
 
-    # ---- 17. Conclusion ---------------------------------------------------
-    story.append(h1("17. Conclusion"))
+    # ---- 17. Reproducing from scratch -------------------------------------
+    story.append(h1("17. Reproducing This Project From Scratch"))
+    story.append(para(
+        "This section contains everything a fresh reader needs to rebuild every number, figure, model artifact, "
+        "and PDF in this report from the source data alone. The pipeline is deterministic given the random seeds "
+        "documented below."
+    ))
+
+    story.append(h2("17.1 Environment"))
+    story.append(bullet("Python 3.12 (tested) on Windows or POSIX. Node.js &ge; 18 is only needed to regenerate notebooks 01&ndash;06 from the JS template."))
+    story.append(bullet("Install dependencies: <font face='Courier'>pip install -r requirements.txt</font>. The file pins the runtime stack (pandas 2.2.3, numpy 2.2.6, scikit-learn 1.6.1, shap 0.51.0, reportlab 4.4.9, &hellip;) and constrains TabPFN with <font face='Courier'>tabpfn&lt;7</font> so the open-weights checkpoint is used."))
+    story.append(bullet("Random seed: <font face='Courier'>RANDOM_STATE = 42</font> is used everywhere &mdash; <font face='Courier'>train_test_split</font>, <font face='Courier'>StratifiedKFold</font>, <font face='Courier'>cross_val_predict</font>, model constructors, bootstrap resampling (<font face='Courier'>np.random.default_rng(seed=42)</font>), and conformal proper-train/calibration split."))
+
+    story.append(h2("17.2 Source Data and Cleaning"))
+    story.append(para(
+        "Place either the extracted source files in <font face='Courier'>_read_extract/</font> or the original "
+        "<font face='Courier'>OneDrive_1_5-11-2026.zip</font> at the project root. Notebook 01 will auto-extract "
+        "the two required tabular files if only the zip is present:"
+    ))
+    story.append(bullet("<font face='Courier'>(Main_Dataset)_PCOS_data_without_infertility.xlsx</font> &mdash; required PCOS clinical dataset (Kerala, n=541)."))
+    story.append(bullet("<font face='Courier'>(Supplementary_Dataset)_structured_endometriosis_data.csv</font> &mdash; synthetic endometriosis differential dataset (10,000 rows)."))
+    story.append(bullet("<font face='Courier'>(Supplementary_Dataset)_PCOS_single_cell_data.zip</font> and <font face='Courier'>(Supplementary_Dataset)_Endometrium_single_cell_data.zip</font> &mdash; optional, only notebook 06 reads them."))
+    story.append(para(
+        "Notebook 01 then runs the cleaning recipe documented in &sect;3: column-name standardisation, numeric "
+        "coercion with logged failures, drop of <font face='Courier'>sl_no</font> / <font face='Courier'>patient_file_no</font> / "
+        "<font face='Courier'>blood_group</font> / <font face='Courier'>marriage_status_yrs</font>, engineering of "
+        "<font face='Courier'>cycle_irregular_flag</font>, and conservative outlier capping on FSH / LH / FSH&divide;LH / vitamin D3 / "
+        "progesterone. The cleaned table is written to <font face='Courier'>outputs/pcos_cleaned.csv</font> and is the "
+        "input to every downstream notebook."
+    ))
+
+    story.append(h2("17.3 Pipeline Execution Order"))
+    story.append(para(
+        "All thirteen notebooks are deterministic and idempotent. Run order matters because notebooks 05, 07&ndash;13 "
+        "all load the joblib artifacts produced by 02&ndash;04."
+    ))
+    story.append(styled_table(
+        ["Step", "Command", "Produces"],
+        [
+            [cell_para("0. Regenerate notebooks 01&ndash;06 (optional, only after editing the .mjs)"),
+             cell_para("node scripts/create_training_notebooks.mjs", path_cell_style),
+             cell_para("notebooks/01&ndash;06.ipynb")],
+            [cell_para("1. Run notebook 01"),
+             cell_para("python -m nbconvert --to notebook --execute --inplace notebooks/01_pcos_data_audit_and_eda.ipynb", path_cell_style),
+             cell_para("outputs/pcos_cleaned.csv, outputs/metrics/pcos_*.csv, EDA figures")],
+            [cell_para("2. Run notebooks 02 and 03"),
+             cell_para("&hellip; --inplace notebooks/02_train_pcos_screening_model.ipynb && &hellip; --inplace notebooks/03_train_pcos_enhanced_model.ipynb", path_cell_style),
+             cell_para("outputs/models/pcos_{screening,enhanced}_model.joblib (+ SHAP backgrounds)")],
+            [cell_para("3. Run notebook 04"),
+             cell_para("&hellip; --inplace notebooks/04_train_endometriosis_overlap_model.ipynb", path_cell_style),
+             cell_para("outputs/models/endometriosis_overlap_model.joblib")],
+            [cell_para("4. Run notebook 05"),
+             cell_para("&hellip; --inplace notebooks/05_thresholds_explainability_and_demo.ipynb", path_cell_style),
+             cell_para("SHAP per-patient figures, demo case JSON, model card")],
+            [cell_para("5. Run notebooks 06&ndash;13 in any order"),
+             cell_para("for nb in notebooks/0[6789]*.ipynb notebooks/1*.ipynb; do python -m nbconvert --execute --inplace --to notebook $nb; done", path_cell_style),
+             cell_para("Single-cell genes, bootstrap CIs, calibration, DCA, TabPFN, subgroup, conformal, Rotterdam outputs")],
+            [cell_para("6. Build the PDF"),
+             cell_para("python report/build_pdf.py", path_cell_style),
+             cell_para("report/pcos_pathfinder_report.pdf (this file)")],
+            [cell_para("7. Launch the prototype"),
+             cell_para("streamlit run src/app.py", path_cell_style),
+             cell_para("Local clinician interface on http://localhost:8501")],
+        ],
+        col_widths=[5.0 * cm, 7.5 * cm, 4.1 * cm],
+        valign="TOP",
+    ))
+
+    story.append(h2("17.4 Methodology Procedures (concise but complete)"))
+
+    story.append(Paragraph("<b>Train/test split</b>", body_style))
+    story.append(para(
+        "<font face='Courier'>train_test_split(X, y, test_size=0.25, stratify=y, random_state=42)</font>. Every "
+        "downstream notebook reproduces the same split from this seed before loading the saved models."
+    ))
+
+    story.append(Paragraph("<b>Threshold selection without test leakage</b>", body_style))
+    story.append(para(
+        "For each chosen model: compute out-of-fold positive-class probabilities on the training set with "
+        "<font face='Courier'>cross_val_predict(method=\"predict_proba\", cv=StratifiedKFold(5, shuffle=True, random_state=42))</font>. "
+        "Sweep candidate thresholds in [0.05, 0.95] step 0.005. Pick the largest threshold satisfying training-CV "
+        "recall &ge; 0.90; if no candidate qualifies, fall back to the highest-F1 threshold. The held-out test set "
+        "is touched exactly once after refitting on the full training data."
+    ))
+
+    story.append(Paragraph("<b>Bootstrap 95% CIs (notebook 07)</b>", body_style))
+    story.append(para(
+        "Draw 2000 resamples from the holdout with replacement using "
+        "<font face='Courier'>np.random.default_rng(seed=42).choice(n_holdout, n_holdout, replace=True)</font>. "
+        "For each resample, compute every metric at the artifact-stored threshold. Skip resamples that collapse to "
+        "a single class (AUC undefined). Report the 2.5th and 97.5th percentile of valid resamples as the 95% CI, "
+        "plus the bootstrap standard error. The paired AUC-difference test reuses the same 2000 resampled index "
+        "vectors for both models; report the percentile CI of the difference and the two-sided empirical p-value as "
+        "<font face='Courier'>2 &times; min(P(&Delta;&le;0), P(&Delta;&ge;0))</font>."
+    ))
+
+    story.append(Paragraph("<b>Calibration (notebook 08)</b>", body_style))
+    story.append(para(
+        "Split the 405-row training set into 70% proper-train and 30% calibration with the same random state. "
+        "Wrap the base classifier in a <font face='Courier'>FrozenEstimator</font> (sklearn &ge; 1.6) or use "
+        "<font face='Courier'>cv=\"prefit\"</font> on older sklearn. Fit <font face='Courier'>CalibratedClassifierCV(method=\"sigmoid\")</font> "
+        "for Platt and <font face='Courier'>method=\"isotonic\"</font> for isotonic. Compute Brier and ECE (10 equal-width bins) "
+        "on the held-out test set for raw, Platt-recalibrated, and isotonic-recalibrated probabilities."
+    ))
+
+    story.append(Paragraph("<b>Decision Curve Analysis (notebook 09)</b>", body_style))
+    story.append(para(
+        "For threshold probability <i>p<sub>t</sub></i> across [0.01, 0.99] in 0.005 steps, net benefit is "
+        "NB(<i>p<sub>t</sub></i>) = TP/N &minus; FP/N &times; (<i>p<sub>t</sub></i> / (1 &minus; <i>p<sub>t</sub></i>)). The "
+        "<i>useful range</i> is the longest contiguous interval where NB<sub>model</sub> exceeds both "
+        "max(NB<sub>treat-all</sub>, 0) and 0."
+    ))
+
+    story.append(Paragraph("<b>Conformal prediction (notebook 12)</b>", body_style))
+    story.append(para(
+        "Split-conformal: from the 405-row training set, hold out 30% (n=122) as a calibration slice and refit a "
+        "clone of the enhanced pipeline on proper-train only (n=283). On the calibration slice compute nonconformity "
+        "scores s = 1 &minus; p<sub>model</sub>(y_true | x). Set q-hat to the quantile of s at level "
+        "ceil((n_cal + 1) &times; (1 &minus; &alpha;)) / n_cal with &alpha; = 0.10. For each holdout patient the prediction "
+        "set is the labels {y : 1 &minus; p(y | x) &le; q-hat}. Coverage validity guarantee is marginal over the holdout."
+    ))
+
+    story.append(Paragraph("<b>Subgroup fairness (notebook 11)</b>", body_style))
+    story.append(para(
+        "Stratify the holdout by age band (<font face='Courier'>&lt;25, 25&ndash;34, 35+</font>) and BMI category "
+        "(<font face='Courier'>underweight, normal, overweight, obese</font>). For each cell with at least one positive "
+        "and one negative, draw 1000 stratified bootstrap resamples (preserving the cell&apos;s class counts) and report "
+        "the 95% percentile CI for recall, specificity, PPV, NPV. Cells with n &lt; 10 or zero positives are flagged "
+        "<font face='Courier'>insufficient_n</font>. <i>Max recall gap</i> is reported per axis per model."
+    ))
+
+    story.append(Paragraph("<b>Rotterdam rule (notebook 13)</b>", body_style))
+    story.append(para(
+        "Hand-coded mapping to the three Rotterdam criteria using <i>training-fold</i> percentiles only "
+        "(no test leakage on the AMH or LH thresholds): (1) oligo-/anovulation = "
+        "<font face='Courier'>cycle_irregular_flag</font> or <font face='Courier'>cycle_r_i &ge; 4</font>; "
+        "(2) hyperandrogenism = clinical (<font face='Courier'>hair_growth | skin_darkening | pimples</font>) "
+        "or biochemical proxy (AMH &ge; train P75 or LH &ge; train P75 or FSH/LH &lt; 0.5); "
+        "(3) polycystic-ovary morphology = <font face='Courier'>follicle_no_l &ge; 12</font> or <font face='Courier'>follicle_no_r &ge; 12</font>. "
+        "Rule predicts PCOS-positive if any 2 of 3 criteria are met. The dataset lacks a direct serum-testosterone "
+        "column; biochemical hyperandrogenism is therefore an approximation, documented as a limitation in &sect;15."
+    ))
+
+    story.append(h2("17.5 Output Files"))
+    story.append(para(
+        "Each notebook ends with an <font face='Courier'>assert</font> cell that confirms its output files exist. "
+        "The complete inventory:"
+    ))
+    story.append(styled_table(
+        ["Path", "Contents"],
+        [
+            [cell_para("outputs/pcos_cleaned.csv", path_cell_style),
+             cell_para("Processed PCOS table after cleaning (input to all downstream models).")],
+            [cell_para("outputs/models/pcos_screening_model.joblib", path_cell_style),
+             cell_para("Pipeline (median imputer + classifier), feature list, threshold, metrics, 100-row SHAP background.")],
+            [cell_para("outputs/models/pcos_enhanced_model.joblib", path_cell_style),
+             cell_para("Same artifact shape, with labs+ultrasound feature set.")],
+            [cell_para("outputs/models/endometriosis_overlap_model.joblib", path_cell_style),
+             cell_para("Differential-prompt model on synthetic data.")],
+            [cell_para("outputs/metrics/{screening,enhanced,endometriosis}_holdout_metrics.json", path_cell_style),
+             cell_para("Point estimates and confusion matrices at the action threshold.")],
+            [cell_para("outputs/metrics/holdout_bootstrap_cis.{json,csv}", path_cell_style),
+             cell_para("2000-resample 95% CIs and paired AUC-difference test.")],
+            [cell_para("outputs/metrics/calibration.json", path_cell_style),
+             cell_para("Brier and ECE for raw / Platt / isotonic, per model.")],
+            [cell_para("outputs/metrics/dca.json", path_cell_style),
+             cell_para("Net-benefit grid, treat-all curve, useful range, per model.")],
+            [cell_para("outputs/metrics/tabpfn_comparison.json", path_cell_style),
+             cell_para("TabPFN-v2 vs Random Forest head-to-head; status flag for skipped runs.")],
+            [cell_para("outputs/metrics/subgroup_performance.{json,csv}", path_cell_style),
+             cell_para("Per-subgroup metrics with bootstrap CIs and max recall gap.")],
+            [cell_para("outputs/metrics/conformal_coverage.json", path_cell_style),
+             cell_para("Target/empirical coverage, q-hat, set-size distribution, worked examples.")],
+            [cell_para("outputs/metrics/rotterdam_comparison.json", path_cell_style),
+             cell_para("Rotterdam-rule metrics vs enhanced ML, with explicit rule definition and feature mapping.")],
+            [cell_para("outputs/metrics/pcos_model_card.md", path_cell_style),
+             cell_para("Concise model card emitted by notebook 05 (intended use, data, limitations).")],
+            [cell_para("outputs/figures/*.png", path_cell_style),
+             cell_para("All plots referenced from this report and the deck.")],
+        ],
+        col_widths=[6.8 * cm, 9.6 * cm],
+        valign="TOP",
+    ))
+
+    # ---- 18. Conclusion ---------------------------------------------------
+    story.append(h1("18. Conclusion"))
     story.append(para(
         "PCOS Pathfinder is not an automated diagnosis. It is a practical, explainable, tiered workflow that "
         "(a) identifies high-risk patients earlier with recall &ge; 0.88 and NPV &ge; 0.93; (b) demonstrates a "
@@ -1000,8 +1215,8 @@ def build():
         "the model card."
     ))
 
-    # ---- 18. References ---------------------------------------------------
-    story.append(h1("18. Selected References"))
+    # ---- 19. References ---------------------------------------------------
+    story.append(h1("19. Selected References"))
     refs = [
         "Collins GS, Moons KGM, Dhiman P, et al. <b>TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods.</b> <i>BMJ</i> 2024;385:e078378.",
         "Van Calster B, McLernon DJ, van Smeden M, et al. <b>Calibration: the Achilles heel of predictive analytics.</b> <i>BMC Medicine</i> 2019;17:230.",
