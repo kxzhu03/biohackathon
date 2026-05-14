@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PCOS Pathfinder - 12 Minute Hackathon Pitch</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #5f6c7b;
+      --line: #d9e1e8;
+      --paper: #fbfcfd;
+      --teal: #007c89;
+      --coral: #d95d39;
+      --gold: #c98910;
+      --green: #2f855a;
+      --navy: #1f3a5f;
+      --lav: #6b5b95;
+      --soft-teal: #e7f4f5;
+      --soft-coral: #fff0eb;
+      --soft-gold: #fff8e6;
+      --shadow: 0 18px 50px rgba(20, 33, 61, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #0f172a; color: var(--ink); }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(28px, 4vw, 64px);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.98)),
+        radial-gradient(circle at 12% 12%, rgba(0,124,137,0.11), transparent 30%),
+        var(--paper);
+      overflow: hidden;
+    }
+
+    .slide.active { display: grid; }
+    .slide::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 10px;
+      background: linear-gradient(90deg, var(--teal), var(--coral), var(--gold), var(--lav));
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, 100%);
+      margin: auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .split, .two, .three, .four, .scoreboard, .closing { display: grid; }
+    .split { grid-template-columns: 1.05fr 0.95fr; align-items: center; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
+
+    .eyebrow {
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: clamp(46px, 6.2vw, 88px);
+      line-height: 0.96;
+      letter-spacing: 0;
+      color: var(--navy);
+    }
+    h2 {
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      color: var(--navy);
+    }
+    h3 {
+      font-size: clamp(19px, 1.7vw, 26px);
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    p, li {
+      font-size: clamp(16px, 1.4vw, 21px);
+      line-height: 1.42;
+      color: var(--muted);
+    }
+    ul { margin: 0; padding-left: 22px; }
+    strong { color: var(--ink); }
+
+    .subtitle {
+      font-size: clamp(21px, 2vw, 30px);
+      line-height: 1.25;
+      max-width: 900px;
+      color: #334155;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--navy);
+      background: rgba(255,255,255,0.72);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .grid { display: grid; gap: 18px; }
+    .card {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+    .card.teal { background: var(--soft-teal); border-color: #bfe4e7; }
+    .card.coral { background: var(--soft-coral); border-color: #ffd0c2; }
+    .card.gold { background: var(--soft-gold); border-color: #f4dfa4; }
+
+    .metric {
+      display: grid;
+      gap: 4px;
+      align-content: center;
+      min-height: 118px;
+    }
+    .metric .value {
+      color: var(--navy);
+      font-size: clamp(34px, 4.2vw, 62px);
+      font-weight: 900;
+      line-height: 0.98;
+    }
+    .metric .label {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .flow .step {
+      border-top: 5px solid var(--teal);
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px;
+      min-height: 150px;
+      box-shadow: 0 10px 30px rgba(20, 33, 61, 0.08);
+    }
+    .flow .step:nth-child(2) { border-top-color: var(--coral); }
+    .flow .step:nth-child(3) { border-top-color: var(--gold); }
+    .flow .step:nth-child(4) { border-top-color: var(--lav); }
+    .step-num {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .figure {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 260px;
+      display: grid;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .figure img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      display: block;
+    }
+    .caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(20, 33, 61, 0.08);
+    }
+    .table th, .table td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: clamp(14px, 1.1vw, 18px);
+    }
+    .table th {
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+    }
+    .table tr:last-child td { border-bottom: 0; }
+    .good { color: var(--green); font-weight: 850; }
+    .warn { color: var(--coral); font-weight: 850; }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .bar {
+      display: grid;
+      grid-template-columns: 190px 1fr 54px;
+      gap: 12px;
+      align-items: center;
+      margin: 11px 0;
+    }
+    .bar span { font-size: 14px; font-weight: 800; color: var(--ink); }
+    .bar-track { height: 12px; background: #edf2f7; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--coral)); }
+
+    .nav {
+      position: fixed;
+      left: 28px;
+      right: 28px;
+      bottom: 20px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .controls { display: flex; gap: 10px; pointer-events: all; }
+    button {
+      border: 1px solid rgba(255,255,255,0.26);
+      background: rgba(15, 23, 42, 0.72);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    button:hover { background: rgba(15, 23, 42, 0.9); }
+    .counter {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.36);
+    }
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--teal), var(--coral), var(--gold));
+      z-index: 6;
+      width: 0;
+    }
+
+    .notes-panel {
+      position: fixed;
+      top: 22px;
+      right: 22px;
+      width: min(460px, calc(100vw - 44px));
+      max-height: calc(100vh - 44px);
+      overflow: auto;
+      z-index: 10;
+      display: none;
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.34);
+    }
+    .notes-panel.show { display: block; }
+    .notes-panel h4 { margin: 0 0 8px; color: #fff; }
+    .notes-panel p { color: #d1d5db; font-size: 15px; line-height: 1.45; }
+    .notes { display: none; }
+
+    .closing {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+    .seal {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, var(--teal), var(--coral), var(--gold), var(--lav), var(--teal));
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+    }
+    .seal div {
+      width: 198px;
+      height: 198px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 22px;
+      font-weight: 900;
+      color: var(--navy);
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .deck { height: auto; }
+      .slide { position: relative; min-height: 100vh; }
+      .slide.active { display: grid; }
+      .split, .two, .three, .four, .scoreboard, .closing { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .nav { position: fixed; }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .slide { display: grid !important; position: relative; page-break-after: always; width: 100vw; height: 100vh; }
+      .nav, .progress, .notes-panel { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <main class="deck" id="deck">
+
+    <section class="slide active" data-title="Title" data-time="0:00-0:40">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">Clinical decision support</span>
+          <div class="eyebrow">Biohackathon 2026 Women's Health</div>
+          <h1>PCOS Pathfinder</h1>
+          <p class="subtitle">A tiered, explainable clinical decision-support prototype for earlier PCOS detection and safer differential workup.</p>
+          <div class="three">
+            <div class="card metric teal"><div class="value">0.953</div><div class="label">Enhanced AUC</div></div>
+            <div class="card metric coral"><div class="value">0.886</div><div class="label">Sensitivity</div></div>
+            <div class="card metric gold"><div class="value">13</div><div class="label">Reproducible notebooks</div></div>
+          </div>
+        </div>
+        <div class="figure">
+          <img src="../outputs/figures/enhanced_roc_curve.png" alt="Enhanced model ROC curve" />
+          <div class="caption">Held-out test split, n=136. Thresholds selected from training out-of-fold probabilities.</div>
+        </div>
+      </div>
+      <aside class="notes">Good morning. We built PCOS Pathfinder: a practical, explainable decision-support workflow for earlier PCOS detection. Our thesis is simple: clinical AI should not just predict a label. It should help clinicians decide who needs assessment, explain why, and avoid missing overlapping conditions. On the held-out split, the enhanced model reaches 0.953 ROC-AUC with 0.886 sensitivity, and everything is reproducible from thirteen notebooks.</aside>
+    </section>
+
+    <section class="slide" data-title="Problem" data-time="0:40-1:35">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">The diagnostic gap</span>
+          <h2>The diagnostic gap is not a data problem alone.</h2>
+          <p>PCOS diagnosis requires synthesizing menstrual history, metabolic signals, hormones, ultrasound, and symptoms that may be dismissed or fragmented across visits.</p>
+          <div class="grid">
+            <div class="card"><h3>Complex presentation</h3><p>Patients may present through acne, weight change, irregular bleeding, infertility, metabolic risk, or ultrasound findings.</p></div>
+            <div class="card"><h3>Delayed pathway</h3><p>Primary care often sees the earliest signals, but labs and ultrasound may arrive later.</p></div>
+            <div class="card"><h3>Overlap risk</h3><p>Pelvic pain and infertility can point toward adjacent gynecologic conditions, so the system must reduce tunnel vision.</p></div>
+          </div>
+        </div>
+        <div class="figure">
+          <img src="../outputs/figures/pcos_symptom_rates.png" alt="PCOS symptom prevalence by group" />
+          <div class="caption">Source cohort symptom differences used to ground the clinical story.</div>
+        </div>
+      </div>
+      <aside class="notes">The challenge asks us to improve diagnostic accuracy in women's health. PCOS is a perfect core case because it is common, heterogeneous, and often delayed. A patient may first present with acne, hair growth, irregular bleeding, weight changes, or fertility concerns. Those signals are clinically meaningful, but they are often spread across visits and specialists. So our design goal is not just a high AUC. It is a workflow that fits the diagnostic pathway.</aside>
+    </section>
+
+    <section class="slide" data-title="Workflow" data-time="1:35-2:30">
+      <div class="content">
+        <span class="section-tag">Tiered workflow</span>
+        <h2>A tiered pathway that matches real clinical escalation.</h2>
+        <div class="flow">
+          <div class="step"><div class="step-num">1</div><h3>Frontline screening</h3><p>Symptoms and basic vitals for primary care, telehealth, or outreach.</p></div>
+          <div class="step"><div class="step-num">2</div><h3>Enhanced support</h3><p>Add labs and ultrasound when the clinician has more evidence.</p></div>
+          <div class="step"><div class="step-num">3</div><h3>Checklist</h3><p>Rotterdam-style completeness, missing testosterone caveat, metabolic prompt, lean-PCOS warning.</p></div>
+          <div class="step"><div class="step-num">4</div><h3>Differential prompt</h3><p>Endometriosis-overlap nudge using synthetic data, framed only as workflow support.</p></div>
+        </div>
+        <div class="card"><p><strong>Core idea:</strong> give clinicians a sequence of next-best actions, not an opaque yes/no diagnosis.</p></div>
+      </div>
+      <aside class="notes">The product is tiered. First, a frontline model uses low-friction data. Second, an enhanced model uses labs and ultrasound. Third, the app shows a diagnostic-completeness checklist so the clinician sees what evidence is present and what is missing. Fourth, the overlap prompt warns when the symptom pattern deserves broader gynecologic workup. That is why this is decision support, not automated diagnosis.</aside>
+    </section>
+
+    <section class="slide" data-title="Data" data-time="2:30-3:35">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">Data foundation</span>
+          <h2>Data choices were conservative by design.</h2>
+          <table class="table">
+            <thead><tr><th>Dataset</th><th>Use</th><th>Claim boundary</th></tr></thead>
+            <tbody>
+              <tr><td>PCOS clinical, n=541</td><td>Main modelling foundation</td><td>Single-source; external validation required</td></tr>
+              <tr><td>Endometriosis, n=10,000</td><td>Symptom-overlap prompt</td><td>Synthetic; not diagnostic validation</td></tr>
+              <tr><td>Single-cell archives</td><td>Gene-list rationale</td><td>Feature-list peek only; no expression analysis</td></tr>
+            </tbody>
+          </table>
+          <div class="card coral"><p><strong>Important correction:</strong> the source field labelled "Cycle length(days)" ranges 0-12 and is treated as duration of menses bleeding, not a 28-day cycle interval.</p></div>
+        </div>
+        <div class="grid">
+          <div class="card teal"><h3>Dropped during cleaning</h3><p>Identifiers, blood group ordinal codes, and marriage-status years.</p></div>
+          <div class="card gold"><h3>Excluded from screening</h3><p>Fast food and exercise proxies, to avoid stigma and weak generalization.</p></div>
+          <div class="card"><h3>Coercions logged</h3><p>Every non-numeric conversion is exported to the audit files.</p></div>
+        </div>
+      </div>
+      <aside class="notes">The data boundaries are as important as the model. We use the PCOS clinical data as the foundation. The endometriosis dataset is synthetic, so we only use it as a workflow prompt. The single-cell data supports biological rationale only. We also fixed a critical data-quality issue: the source says cycle length, but the range is zero to twelve days, so it is actually bleeding duration. That prevents out-of-distribution inputs like twenty-eight days.</aside>
+    </section>
+
+    <section class="slide" data-title="Method" data-time="3:35-4:35">
+      <div class="content two">
+        <div class="grid">
+          <span class="section-tag">Model design</span>
+          <h2>Validation avoids the common traps.</h2>
+          <div class="card"><h3>No test leakage</h3><p>Model selection uses five-fold CV on training data. Action thresholds are selected from out-of-fold training probabilities.</p></div>
+          <div class="card"><h3>One final holdout</h3><p>The held-out test split is touched once for final reporting.</p></div>
+          <div class="card"><h3>Recall-first thresholding</h3><p>Threshold sweep targets training-CV recall at least 0.90, then maximizes specificity, precision, and F1.</p></div>
+        </div>
+        <div class="grid">
+          <table class="table">
+            <thead><tr><th>Model</th><th>Feature set</th><th>Clinical role</th></tr></thead>
+            <tbody>
+              <tr><td>Screening RF</td><td>13 basic features</td><td>Rule-out triage</td></tr>
+              <tr><td>Enhanced RF</td><td>27 clinical features</td><td>Diagnostic support</td></tr>
+              <tr><td>Endometriosis LR</td><td>6 overlap features</td><td>Differential prompt only</td></tr>
+            </tbody>
+          </table>
+          <div class="figure">
+            <img src="../outputs/figures/screening_precision_recall_curve.png" alt="Screening precision recall curve" />
+          </div>
+        </div>
+      </div>
+      <aside class="notes">The key methodological point is that the threshold is not chosen on the test set. We select models using cross-validation on training data, then choose thresholds using out-of-fold probabilities from that training split. Only after that do we evaluate on the held-out test set. That keeps the final metrics honest. We also optimize for recall because this is triage: missing a PCOS case is more costly than sending someone for follow-up.</aside>
+    </section>
+
+    <section class="slide" data-title="Results" data-time="4:35-5:35">
+      <div class="content">
+        <span class="section-tag">Held-out performance</span>
+        <h2>Enhanced support preserves sensitivity and greatly improves precision.</h2>
+        <table class="table">
+          <thead><tr><th>Model</th><th>Threshold</th><th>AUC</th><th>Recall</th><th>Specificity</th><th>PPV</th><th>NPV</th><th>F2</th></tr></thead>
+          <tbody>
+            <tr><td>Screening</td><td>0.285</td><td>0.896</td><td class="good">0.886</td><td>0.685</td><td>0.574</td><td>0.926</td><td>0.799</td></tr>
+            <tr><td>Enhanced</td><td>0.380</td><td class="good">0.953</td><td class="good">0.886</td><td class="good">0.902</td><td class="good">0.812</td><td class="good">0.943</td><td class="good">0.871</td></tr>
+            <tr><td>Endometriosis prompt</td><td>0.510</td><td>0.660</td><td>0.628</td><td>0.618</td><td>0.532</td><td>--</td><td>0.609</td></tr>
+          </tbody>
+        </table>
+        <div class="three">
+          <div class="card metric teal"><div class="value">39/44</div><div class="label">PCOS positives caught</div></div>
+          <div class="card metric coral"><div class="value">+21.7</div><div class="label">Specificity points vs screening</div></div>
+          <div class="card metric gold"><div class="value">0.943</div><div class="label">Enhanced NPV</div></div>
+        </div>
+      </div>
+      <aside class="notes">Here is the headline. The screening model catches 39 of 44 PCOS-positive patients in the holdout cohort. The enhanced model keeps the same sensitivity, but raises specificity from 0.685 to 0.902 and precision from 0.574 to 0.812. That is the point of the tiered workflow: screen broadly first, then use labs and ultrasound to reduce false positives.</aside>
+    </section>
+
+    <section class="slide" data-title="Rigor" data-time="5:35-6:30">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">Uncertainty and calibration</span>
+          <h2>The rigor layer makes the model harder to dismiss.</h2>
+          <div class="grid">
+            <div class="card"><h3>Uncertainty</h3><p>2000-resample bootstrap CIs; enhanced AUC advantage: +0.057, 95% CI [+0.013, +0.105].</p></div>
+            <div class="card"><h3>Calibration</h3><p>Enhanced Platt scaling improves Brier 0.093 to 0.072 and ECE 0.143 to 0.045.</p></div>
+            <div class="card"><h3>Conformal coverage</h3><p>Target 0.90; empirical holdout coverage 0.912. Empty sets are abstentions.</p></div>
+          </div>
+        </div>
+        <div class="figure">
+          <img src="../outputs/figures/calibration_combined.png" alt="Calibration curves" />
+          <div class="caption">Notebook 08: probability quality before and after recalibration.</div>
+        </div>
+      </div>
+      <aside class="notes">Point estimates alone are not enough for a clinical prediction pitch. We added bootstrap confidence intervals, calibration, decision curve analysis, conformal prediction, subgroup audits, TabPFN benchmarking, and a Rotterdam comparison. This lets us say not only that the model performs well, but that we understand uncertainty, probability quality, action thresholds, and failure modes.</aside>
+    </section>
+
+    <section class="slide" data-title="Utility" data-time="6:30-7:25">
+      <div class="content two">
+        <div class="grid">
+          <span class="section-tag">Clinical utility and safety</span>
+          <h2>Actionability matters more than a prettier metric.</h2>
+          <div class="figure">
+            <img src="../outputs/figures/dca_combined.png" alt="Decision curve analysis" />
+          </div>
+        </div>
+        <div class="grid">
+          <div class="card teal"><h3>Decision curve analysis</h3><p>Both selected thresholds sit inside useful net-benefit ranges against treat-all and treat-none baselines.</p></div>
+          <div class="card coral"><h3>Subgroup honesty</h3><p>Screening has a 25-point BMI recall gap, lowest in normal-BMI patients. The app warns not to rule out lean PCOS solely from low probability.</p></div>
+          <div class="figure">
+            <img src="../outputs/figures/subgroup_recall_by_bmi.png" alt="Subgroup recall by BMI" />
+          </div>
+        </div>
+      </div>
+      <aside class="notes">Decision curve analysis asks whether a model helps at clinically plausible thresholds. Our selected thresholds do. We also found an honest fairness risk: recall is lower in the normal-BMI group for screening. Rather than hide that, we added a warning to the prototype. The safety point is simple: average performance is not enough if a subgroup can be missed.</aside>
+    </section>
+
+    <section class="slide" data-title="Explainability" data-time="7:25-8:15">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">Explainability at the patient level</span>
+          <h2>Every prediction needs a reason clinicians can inspect.</h2>
+          <div class="card"><h3>Patient-level SHAP</h3><p>The demo surfaces top log-odds contributors for the individual patient, not just global feature rankings.</p></div>
+          <div class="card"><h3>Checklist safety net</h3><p>The app shows which clinical evidence is present, which tests are missing, and when metabolic or lean-PCOS follow-up is needed.</p></div>
+        </div>
+        <div class="figure">
+          <img src="../outputs/figures/enhanced_shap_positive_case.png" alt="Enhanced SHAP explanation" />
+          <div class="caption">Held-out positive case: follicle counts dominate enhanced-model explanation.</div>
+        </div>
+      </div>
+      <aside class="notes">Explainability is not an afterthought. The clinician sees the probability, the action threshold, the risk tier, and the top SHAP contributors. In the enhanced model, follicle counts rise to the top, which is clinically sensible. We also add a checklist that translates model output into next-step reasoning: what evidence supports PCOS, what evidence is missing, and what should not be overlooked.</aside>
+    </section>
+
+    <section class="slide" data-title="Benchmarks" data-time="8:15-9:10">
+      <div class="content two">
+        <div class="grid">
+          <span class="section-tag">External benchmarks</span>
+          <h2>We benchmarked against both modern ML and clinical rules.</h2>
+          <div class="figure">
+            <img src="../outputs/figures/tabpfn_vs_rf_auc.png" alt="TabPFN vs random forest AUC" />
+          </div>
+        </div>
+        <div class="grid">
+          <div class="card teal"><h3>TabPFN-v2 benchmark</h3><p>TabPFN reaches AUC 0.905 screening and 0.962 enhanced, but trades away recall at our clinical threshold and is slower on CPU.</p></div>
+          <div class="card coral"><h3>Rotterdam comparison</h3><p>Enhanced ML adds 9.1 sensitivity points with a 1.1 specificity-point cost versus a hand-coded 2-of-3 rule.</p></div>
+          <div class="figure">
+            <img src="../outputs/figures/rotterdam_vs_ml.png" alt="Rotterdam rule vs ML" />
+          </div>
+        </div>
+      </div>
+      <aside class="notes">We did not stop at comparing random forest to logistic regression. We benchmarked against TabPFN, a modern small-tabular foundation model, and against a Rotterdam-style clinical rule. TabPFN slightly improves AUC, but the random forest keeps better recall and F2 at the selected action threshold and is easier to deploy. Against Rotterdam, enhanced ML catches more positives with only a small specificity cost. We also state the limitation: the dataset lacks testosterone.</aside>
+    </section>
+
+    <section class="slide" data-title="Differential" data-time="9:10-9:55">
+      <div class="content split">
+        <div class="grid">
+          <span class="section-tag">Differential diagnosis prompt</span>
+          <h2>PCOS Pathfinder avoids tunnel vision.</h2>
+          <p>The endometriosis module is intentionally modest: it is a synthetic-data prompt that says "consider broader workup," not "diagnose endometriosis."</p>
+          <div class="three">
+            <div class="card metric teal"><div class="value">0.660</div><div class="label">Overlap AUC</div></div>
+            <div class="card metric coral"><div class="value">6</div><div class="label">Prompt features</div></div>
+            <div class="card metric gold"><div class="value">0</div><div class="label">Diagnostic overclaim</div></div>
+          </div>
+        </div>
+        <div class="figure">
+          <img src="../outputs/figures/endometriosis_confusion_matrix.png" alt="Endometriosis overlap confusion matrix" />
+        </div>
+      </div>
+      <aside class="notes">The differential module is deliberately framed as a prompt. Because the endometriosis dataset is synthetic, we do not claim clinical diagnostic validity. But it is still useful for the hackathon goal: when chronic pain, infertility, hormonal abnormality, and menstrual irregularity cluster together, the system reminds the clinician not to stop thinking after the PCOS risk score.</aside>
+    </section>
+
+    <section class="slide" data-title="Implementation" data-time="9:55-10:55">
+      <div class="content">
+        <span class="section-tag">Implementation path</span>
+        <h2>Submission-ready implementation, not a concept sketch.</h2>
+        <div class="four">
+          <div class="card teal"><h3>Prototype</h3><p>Streamlit app loads the same joblib artifacts generated by notebooks.</p></div>
+          <div class="card coral"><h3>Reproducibility</h3><p>13 executed notebooks, deterministic notebook builders, pinned core dependencies.</p></div>
+          <div class="card gold"><h3>Artifacts</h3><p>Metrics JSON/CSV, figures, model card, cleaned data, saved models.</p></div>
+          <div class="card"><h3>Packaging</h3><p>README, submission checklist, ignored large source archives, and limitations documented.</p></div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Deployment step</th><th>What changes before real use</th><th>Acceptance gate</th></tr></thead>
+          <tbody>
+            <tr><td>Internal validation</td><td>Repeat notebook pipeline on partner data</td><td>Recall and calibration remain stable</td></tr>
+            <tr><td>Clinical pilot</td><td>Run as silent decision support beside usual care</td><td>Measures earlier referral without excess harm</td></tr>
+            <tr><td>Prospective study</td><td>Collect outcomes and subgroup performance</td><td>External validation before deployment</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <aside class="notes">This is feasible because it is already implemented. The Streamlit app loads saved artifacts, the notebooks reproduce the metrics, and the outputs are packaged for review. But we do not pretend this is ready for clinical deployment. The next step is external validation, then a silent pilot, then prospective evaluation. That balance of ambition and restraint is important.</aside>
+    </section>
+
+    <section class="slide" data-title="Impact" data-time="10:55-12:00">
+      <div class="content two">
+        <div class="grid">
+          <span class="section-tag">Patient and system impact</span>
+          <h2>Impact comes from earlier, clearer next steps.</h2>
+          <ul>
+            <li><strong>Primary care:</strong> identify patients who need PCOS assessment before years of delay.</li>
+            <li><strong>Low-resource settings:</strong> screening model uses symptoms and basic vitals only.</li>
+            <li><strong>Patient safety:</strong> risk tiers, SHAP, calibration, conformal abstention, and explicit caveats.</li>
+            <li><strong>Equity honesty:</strong> subgroup gaps are reported, not hidden.</li>
+          </ul>
+        </div>
+        <div class="grid">
+          <div class="card teal metric"><div class="value">13</div><div class="label">features for frontline screening</div></div>
+          <div class="card coral metric"><div class="value">0.912</div><div class="label">conformal coverage</div></div>
+          <div class="card gold metric"><div class="value">20</div><div class="label">curated PCOS genes found in sampled feature list</div></div>
+        </div>
+      </div>
+      <aside class="notes">The public-health value is earlier triage. The low-resource value is that the first model does not require labs or ultrasound. The safety value is that the system explains itself and states what it does not know. And the equity value is honesty: we found a subgroup risk and built a warning around it, rather than presenting a polished but unsafe story.</aside>
+    </section>
+
+  </main>
+
+  <div class="nav">
+    <div class="controls">
+      <button id="prev" aria-label="Previous slide">Prev</button>
+      <button id="next" aria-label="Next slide">Next</button>
+      <button id="notesBtn" aria-label="Toggle speaker notes">Notes</button>
+    </div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <aside class="notes-panel" id="notesPanel"></aside>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    const notesPanel = document.getElementById('notesPanel');
+    let index = 0;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      const current = slides[index];
+      const title = current.dataset.title;
+      const time = current.dataset.time;
+      counter.textContent = `${String(index + 1).padStart(2, '0')} / ${slides.length}  |  ${time}`;
+      progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+      const notes = current.querySelector('.notes')?.textContent?.trim() || '';
+      notesPanel.innerHTML = `<h4>${title} (${time})</h4><p>${notes}</p>`;
+      location.hash = String(index + 1);
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById('prev').addEventListener('click', () => go(-1));
+    document.getElementById('next').addEventListener('click', () => go(1));
+    document.getElementById('notesBtn').addEventListener('click', () => notesPanel.classList.toggle('show'));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') go(1);
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') go(-1);
+      if (event.key.toLowerCase() === 'n') notesPanel.classList.toggle('show');
+    });
+    const start = Number(location.hash.replace('#', ''));
+    if (start >= 1 && start <= slides.length) index = start - 1;
+    render();
+  </script>
+</body>
+</html>
