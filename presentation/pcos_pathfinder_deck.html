@@ -684,7 +684,7 @@
           </table>
         </div>
         <div class="grid">
-          <div class="card teal"><h3>Dropped during cleaning</h3><p>Identifiers, blood group ordinal codes, and marriage-status years.</p></div>
+          <div class="card teal"><h3>Blood-group caveat</h3><p>Yang et al. 2025 supports phenotype/severity context, not ordinal model input or standalone diagnosis.</p></div>
           <div class="card gold"><h3>Excluded from screening</h3><p>Fast food and exercise proxies, to avoid stigma and weak generalization.</p></div>
           <div class="card"><h3>Coercions logged</h3><p>Every non-numeric conversion is exported to the audit files.</p></div>
         </div>
@@ -699,8 +699,8 @@
         <div class="demo-row">
           <div class="code-card">
             <div class="card-label">scripts/create_training_notebooks.mjs &mdash; clean_pcos_dataframe</div>
-<pre><code><span class="c"># Drop columns that cannot defensibly contribute,</span>
-<span class="c"># and log every non-numeric coercion before dropping.</span>
+<pre><code><span class="c"># Drop identifiers/sensitive fields; withhold</span>
+<span class="c"># blood_group until categorical encoding is validated.</span>
 <span class="k">def</span> <span class="f">clean_pcos_dataframe</span>(df):
     df = df.copy()
     coercion_report = {}
@@ -736,9 +736,9 @@ Non-numeric values coerced to NaN:</span>
 Name: count, dtype: int64</pre>
           </div>
         </div>
-        <div class="takeaway">Two stray data-quality issues caught and logged before they can bias a model. <code>blood_group</code> dropped because the codes 11–18 are not ordinal, and <code>marriage_status_yrs</code> dropped because it is clinically sensitive with no diagnostic signal.</div>
+        <div class="takeaway">Two stray data-quality issues caught and logged before they can bias a model. Yang et al. 2025 links ABO blood type to menstrual bleeding level inside PCOS, but not PCOS-vs-control diagnosis; retain ABO/Rh as categorical metadata, not numeric 11–18 input.</div>
       </div>
-      <aside class="notes">This is the cleaning step. Every column gets numeric-coerced and every non-numeric cell that drops to NaN is recorded with an example. That is how we caught the literal string "1.99." in the second beta-HCG column and the literal letter "a" in the AMH column. We drop identifiers, the blood-group ordinal codes, and the marriage-status column. The marriage-status drop is clinical safety, not just statistics.</aside>
+      <aside class="notes">This is the cleaning step. Every column gets numeric-coerced and every non-numeric cell that drops to NaN is recorded with an example. That is how we caught the literal string "1.99." in the second beta-HCG column and the literal letter "a" in the AMH column. We drop identifiers and the marriage-status column. Blood group is not ignored clinically; it is withheld from the current model because codes 11 to 18 are categorical ABO/Rh labels, not an ordered scale. The justification is Yang et al., BMC Endocrine Disorders 2025: they found no significant ABO distribution difference between PCOS and controls, but within PCOS patients blood type was associated with menstrual bleeding level and BMI, FSH, LH, and estradiol differences. So the responsible edit is to retain validated ABO/Rh later for phenotype or symptom-severity display, not use 11 to 18 as a diagnostic number.</aside>
     </section>
 
     <section class="slide" data-title="Method" data-time="3:10-3:50">
@@ -1399,11 +1399,11 @@ fsh_lh                  0.39    <span class="hi">+0.018</span>  ↑ PCOS</pre>
         'The endometriosis dataset is synthetic, meaning it was generated to look realistic but is not the same as real patient data. Because of that, the project uses it only to demonstrate a symptom-overlap prompt. It would be unsafe to claim that this module clinically diagnoses endometriosis.',
         'The single-cell archives are also handled conservatively. The project checks whether known PCOS-related genes appear in one sampled feature list, which gives biological context. It does not perform full single-cell analysis, clustering, differential expression, or biomarker discovery.',
         'The most important data-cleaning correction is the field labelled cycle length. A normal menstrual cycle is often around 28 days, but the source column ranges from 0 to 12. That strongly suggests the column is actually the number of bleeding days, so the app relabels it as duration of menses bleeding. This prevents users from entering a value that the model never saw during training.',
-        'The slide also explains feature exclusion. Identifiers are dropped because they do not describe health. Blood group is dropped because the dataset stores it as ordinal-looking codes that do not have a meaningful order. Marriage-status years is dropped because it is clinically sensitive and not a defensible diagnostic feature. Lifestyle proxies are excluded from screening because they can introduce stigma and bias.'
+        'The slide also explains feature exclusion. Identifiers are dropped because they do not describe health. Blood group is withheld from the current model because the dataset stores it as ordinal-looking codes, even though ABO/Rh is categorical. Yang et al., BMC Endocrine Disorders 2025, supports using blood type cautiously as phenotype or symptom-severity context: the paper found no significant ABO distribution difference between PCOS and controls, but did find within-PCOS associations with menstrual bleeding level and BMI, FSH, LH, and estradiol. Marriage-status years is dropped because it is clinically sensitive and not a defensible diagnostic feature. Lifestyle proxies are excluded from screening because they can introduce stigma and bias.'
       ],
       'Demo 1: Data audit': [
         'This is a technical demo slide, but the simple idea is quality control. Before training any model, the raw spreadsheet has to be cleaned into consistent numbers and column names. If that step is sloppy, the model can learn from mistakes in the data rather than real clinical patterns.',
-        'The code standardizes column names, converts values into numeric form, records values that cannot be converted, and removes columns that should not be used. Recording the bad values matters because it makes the cleaning transparent instead of silently changing the dataset.',
+        'The code standardizes column names, converts values into numeric form, records values that cannot be converted, and removes columns that should not be used as current model inputs. Blood group is the important nuance: based on Yang et al. 2025, it may be useful later for symptom-severity displays, but the current 11 to 18 coding should not be treated as a numeric clinical scale. Recording the bad values matters because it makes the cleaning transparent instead of silently changing the dataset.',
         'The audit table shows two examples of messy data: one beta-HCG value written as 1.99. with an extra period, and one AMH value written as the letter a. These are not valid numbers. The notebook logs them so the team can explain exactly how the data was handled.',
         'This slide is useful in Q&A because it shows scientific discipline. The project is not just training a model and hoping for the best. It documents what was changed, why it was changed, and what was left out for safety reasons.'
       ],

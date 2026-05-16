@@ -89,7 +89,7 @@ biohackathon/
 - **External benchmarks.** TabPFN-v2 (Nature 2025) confirms our Random Forest is near-ceiling on this dataset (Δ AUC < +0.01); compared with a hand-coded Rotterdam 2-of-3 rule (Teede et al. 2023), the enhanced ML model adds 9.1 pts sensitivity with a 1.1 pt specificity cost.
 - **Fairness audit.** Subgroup recall reported by age band and BMI category with bootstrap CIs. A 25-point BMI recall gap in the screening model is flagged honestly as a deployment risk.
 - **Diagnostic workflow checks.** The Streamlit app now shows a Rotterdam-style completeness checklist, missing-test caveat, metabolic follow-up prompt, and lean-PCOS safety warning.
-- **Dropped / excluded features.** `blood_group` (meaningless ordinal codes) and `marriage_status_yrs` (clinically sensitive, no diagnostic signal) are dropped during cleaning; lifestyle proxies (`fast_food`, `reg_exercise`) are excluded from the screening feature set to avoid bias and stigma.
+- **Dropped / excluded features.** `blood_group` is excluded from current model inputs because its 11-18 codes are categorical ABO/Rh labels, not an ordered scale; validated blood group should be kept as categorical metadata for future symptom-severity/subgroup displays. `marriage_status_yrs` is clinically sensitive with no diagnostic signal, and lifestyle proxies (`fast_food`, `reg_exercise`) are excluded from screening to avoid bias and stigma.
 
 ## Results snapshot
 

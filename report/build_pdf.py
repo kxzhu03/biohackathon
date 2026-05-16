@@ -40,22 +40,34 @@ from reportlab.lib.fonts import addMapping
 from reportlab.pdfgen.canvas import Canvas
 from PIL import Image as PILImage
 
-import matplotlib
+# Prefer DejaVu Sans from matplotlib when available. The bundled Codex runtime
+# used for document work may omit matplotlib, so fall back to ReportLab's Vera
+# fonts rather than making PDF generation depend on that optional package.
+try:
+    import matplotlib
 
-# Register DejaVu Sans (bundled with matplotlib) for the body font so that
-# Greek letters, the proper minus sign, combining accents, and other glyphs
-# missing from reportlab's bundled Helvetica render correctly instead of as
-# tofu boxes. We register Regular / Bold / Oblique / BoldOblique so the
-# Paragraph parser can switch via <b>/<i> tags.
-_MPL_FONTS = Path(matplotlib.get_data_path()) / "fonts" / "ttf"
-for _name, _file in [
-    ("DejaVuSans", "DejaVuSans.ttf"),
-    ("DejaVuSans-Bold", "DejaVuSans-Bold.ttf"),
-    ("DejaVuSans-Oblique", "DejaVuSans-Oblique.ttf"),
-    ("DejaVuSans-BoldOblique", "DejaVuSans-BoldOblique.ttf"),
-    ("DejaVuSansMono", "DejaVuSansMono.ttf"),
-]:
-    pdfmetrics.registerFont(TTFont(_name, str(_MPL_FONTS / _file)))
+    _FONT_DIR = Path(matplotlib.get_data_path()) / "fonts" / "ttf"
+    _FONT_FILES = [
+        ("DejaVuSans", "DejaVuSans.ttf"),
+        ("DejaVuSans-Bold", "DejaVuSans-Bold.ttf"),
+        ("DejaVuSans-Oblique", "DejaVuSans-Oblique.ttf"),
+        ("DejaVuSans-BoldOblique", "DejaVuSans-BoldOblique.ttf"),
+        ("DejaVuSansMono", "DejaVuSansMono.ttf"),
+    ]
+except ModuleNotFoundError:
+    import reportlab
+
+    _FONT_DIR = Path(reportlab.__file__).resolve().parent / "fonts"
+    _FONT_FILES = [
+        ("DejaVuSans", "Vera.ttf"),
+        ("DejaVuSans-Bold", "VeraBd.ttf"),
+        ("DejaVuSans-Oblique", "VeraIt.ttf"),
+        ("DejaVuSans-BoldOblique", "VeraBI.ttf"),
+        ("DejaVuSansMono", "Vera.ttf"),
+    ]
+
+for _name, _file in _FONT_FILES:
+    pdfmetrics.registerFont(TTFont(_name, str(_FONT_DIR / _file)))
 addMapping("DejaVuSans", 0, 0, "DejaVuSans")
 addMapping("DejaVuSans", 1, 0, "DejaVuSans-Bold")
 addMapping("DejaVuSans", 0, 1, "DejaVuSans-Oblique")
@@ -536,12 +548,25 @@ def build():
     ))
     story.append(bullet("Standardise column names to lowercase snake case; coerce numerics and log every non-numeric cell."))
     story.append(bullet("Drop identifiers (<font face='Courier'>sl_no</font>, <font face='Courier'>patient_file_no</font>)."))
-    story.append(bullet("Drop <font face='Courier'>blood_group</font> (codes 11&ndash;18 are not ordinal) and <font face='Courier'>marriage_status_yrs</font> (clinically sensitive, no diagnostic signal)."))
+    story.append(bullet("Exclude <font face='Courier'>blood_group</font> from current model inputs because codes 11&ndash;18 are categorical ABO/Rh labels, not an ordered clinical scale; drop <font face='Courier'>marriage_status_yrs</font> because it is clinically sensitive with no diagnostic signal."))
     story.append(bullet("Engineer <font face='Courier'>cycle_irregular_flag</font> from <font face='Courier'>cycle_r_i</font> (Kaggle coding: 2 = regular, 4/5 = irregular)."))
     story.append(bullet("Cap visibly-impossible outliers in FSH, LH, FSH/LH, vitamin D3, progesterone."))
     story.append(bullet("Use median imputation <i>inside</i> each scikit-learn pipeline so the rules travel with the saved artifact."))
 
-    story.append(h2("3.1 Data Caveat: \"Cycle Length\" Is Actually Bleeding Duration"))
+    story.append(h2("3.1 Blood Group Handling: Categorical Metadata, Not Ordinal Diagnosis"))
+    story.append(callout(
+        "Dropping <font face='Courier'>blood_group</font> from the current models is an encoding and evidence-boundary "
+        "choice, not a claim that blood group is irrelevant. Yang et al. (2025) reported no statistically significant "
+        "ABO distribution difference between PCOS and controls, so blood group should not be treated as a standalone "
+        "PCOS diagnostic feature. Within PCOS patients, however, they found blood type associated with menstrual "
+        "bleeding level and differences in BMI, FSH, LH, and estradiol. In future iterations, the app should retain "
+        "validated ABO/Rh blood group as categorical metadata for phenotype and symptom-severity stratification "
+        "(for example, one-hot encoded or used in subgroup displays), while never feeding the numeric 11&ndash;18 codes "
+        "as an ordinal variable."
+    ))
+    story.append(Spacer(1, 0.3 * cm))
+
+    story.append(h2("3.2 Data Caveat: \"Cycle Length\" Is Actually Bleeding Duration"))
     story.append(callout(
         "The source column labelled <b>Cycle length(days)</b> ranges 0&ndash;12 with a median of 5 across both "
         "classes &mdash; this is the <i>duration of menses bleeding in days</i>, not the menstrual cycle interval. "
@@ -1042,7 +1067,7 @@ def build():
     story.append(para(
         "Notebook 01 then runs the cleaning recipe documented in &sect;3: column-name standardisation, numeric "
         "coercion with logged failures, drop of <font face='Courier'>sl_no</font> / <font face='Courier'>patient_file_no</font> / "
-        "<font face='Courier'>blood_group</font> / <font face='Courier'>marriage_status_yrs</font>, engineering of "
+        "<font face='Courier'>blood_group</font> as an ordinal numeric input / <font face='Courier'>marriage_status_yrs</font>, engineering of "
         "<font face='Courier'>cycle_irregular_flag</font>, and conservative outlier capping on FSH / LH / FSH&divide;LH / vitamin D3 / "
         "progesterone. The cleaned table is written to <font face='Courier'>outputs/pcos_cleaned.csv</font> and is the "
         "input to every downstream notebook."
@@ -1227,6 +1252,7 @@ def build():
         "Obermeyer Z, Powers B, Vogeli C, Mullainathan S. <b>Dissecting racial bias in an algorithm used to manage the health of populations.</b> <i>Science</i> 2019;366(6464):447-453.",
         "Rotterdam ESHRE/ASRM-Sponsored PCOS Consensus Workshop Group. <b>Revised 2003 consensus on diagnostic criteria and long-term health risks related to polycystic ovary syndrome (PCOS).</b> <i>Fertil Steril</i> 2004;81(1):19-25.",
         "Teede HJ, Tay CT, Laven JJE, et al. <b>Recommendations from the 2023 International Evidence-based Guideline for the Assessment and Management of Polycystic Ovary Syndrome.</b> <i>Fertil Steril</i> 2023;120(4):767-793.",
+        "Yang S, Zhang H, Shi L, et al. <b>Menstrual disorder is associated with blood type in PCOS patients: evidence from a cross-sectional survey.</b> <i>BMC Endocrine Disorders</i> 2025;25:77.",
         "Lundberg SM, Lee SI. <b>A unified approach to interpreting model predictions.</b> <i>NeurIPS</i> 2017. (SHAP)",
     ]
     for r in refs:

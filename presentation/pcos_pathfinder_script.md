@@ -43,11 +43,11 @@ The product is tiered. First, a frontline model uses low-friction data. Second, 
 
 ## Slide 4 — Data (1:50-2:30)
 
-The data boundaries are as important as the model. We use the PCOS clinical data as the foundation. The endometriosis dataset is synthetic, so we only use it as a workflow prompt. The single-cell data supports biological rationale only. We also fixed a critical data-quality issue: the source says cycle length, but the range is zero to twelve days, so it is actually bleeding duration. That prevents out-of-distribution inputs like twenty-eight days.
+The data boundaries are as important as the model. We use the PCOS clinical data as the foundation. The endometriosis dataset is synthetic, so we only use it as a workflow prompt. The single-cell data supports biological rationale only. We also fixed a critical data-quality issue: the source says cycle length, but the range is zero to twelve days, so it is actually bleeding duration. That prevents out-of-distribution inputs like twenty-eight days. Blood group is handled as an encoding caveat, not ignored: Yang et al., BMC Endocrine Disorders 2025, found no significant ABO distribution difference between PCOS and controls, but did find within-PCOS associations with menstrual bleeding level and BMI, FSH, LH, and estradiol. So we do not feed 11 to 18 as ordered numbers, but validated ABO/Rh can be retained later as categorical metadata for symptom-severity stratification.
 
 ## Slide 5 — Demo 1: Data audit (2:30-3:10) — Live walkthrough
 
-This is the cleaning step. Every column gets numeric-coerced and every non-numeric cell that drops to NaN is recorded with an example. That is how we caught the literal string "1.99." in the second beta-HCG column and the literal letter "a" in the AMH column. We drop identifiers, the blood-group ordinal codes, and the marriage-status column. The marriage-status drop is clinical safety, not just statistics.
+This is the cleaning step. Every column gets numeric-coerced and every non-numeric cell that drops to NaN is recorded with an example. That is how we caught the literal string "1.99." in the second beta-HCG column and the literal letter "a" in the AMH column. We drop identifiers and the marriage-status column. Blood group is withheld from the current model because codes 11 to 18 are categorical ABO/Rh labels, not an ordered clinical scale. The literature justification is Yang et al. 2025: blood type was not a PCOS-vs-control diagnostic separator in that study, but within PCOS it related to bleeding severity and endocrine/metabolic profiles. That is why the safe implementation is categorical phenotype or symptom-severity metadata, not a standalone diagnostic feature.
 
 ## Slide 6 — Method (3:10-3:50)
 

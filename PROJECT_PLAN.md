@@ -516,7 +516,7 @@ Steps (implemented in `clean_pcos_dataframe` inside `scripts/create_training_not
 3. Convert all fields with `pd.to_numeric(errors="coerce")` and log every silently-coerced cell to `outputs/metrics/pcos_coercion_report.csv`.
 4. Drop columns that cannot contribute defensibly:
    - `sl_no`, `patient_file_no` (identifiers)
-   - `blood_group` (ordinal codes 11-18 with no meaningful order)
+   - `blood_group` (categorical ABO/Rh codes stored as 11-18; exclude from current models rather than treating as ordinal, but retain as future categorical severity/subgroup metadata)
    - `marriage_status_yrs` (clinically sensitive, no diagnostic signal)
 5. Keep binary variables encoded as 1/0 (already the source format).
 6. Engineer `cycle_irregular_flag` from `cycle_r_i`: the Kaggle-style coding uses 2 for regular and 4/5 for irregular, so `flag = 1 if cycle_r_i >= 4 else 0`.

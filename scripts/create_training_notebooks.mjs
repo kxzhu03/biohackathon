@@ -99,7 +99,8 @@ def clean_column_name(name):
 
 # Columns we never want to keep, even though they parse as numeric.
 # - sl_no / patient_file_no: identifiers, no clinical signal.
-# - blood_group: stored as ordinal codes (11-18) which has no meaningful order.
+# - blood_group: categorical ABO/Rh codes stored as numbers (11-18);
+#   exclude from current models rather than treating them as ordinal.
 # - marriage_status_yrs: clinically sensitive and a poor proxy for anything
 #   diagnostic; the plan flags it as unsuitable for screening.
 DROP_COLUMNS = ["sl_no", "patient_file_no", "blood_group", "marriage_status_yrs"]

@@ -116,13 +116,17 @@ Data cleaning is implemented in the notebook setup cells generated from the dete
   \item Drop columns that cannot defensibly contribute:
   \begin{itemize}
     \item \code{sl\_no}, \code{patient\_file\_no} (identifiers).
-    \item \code{blood\_group}: stored as ordinal codes 11--18, which has no meaningful order.
+    \item \code{blood\_group}: excluded from the current model inputs because codes 11--18 are categorical ABO/Rh labels, not an ordered clinical scale.
     \item \code{marriage\_status\_yrs}: clinically sensitive, not a diagnostic signal.
   \end{itemize}
   \item Engineer \code{cycle\_irregular\_flag} from \code{cycle\_r\_i} (Kaggle coding: 2 = regular, 4/5 = irregular).
   \item Cap visibly-impossible outliers in FSH, LH, FSH/LH, vitamin D3, and progesterone.
   \item Use median imputation \emph{inside} each scikit-learn pipeline, so imputation rules travel with the saved artifact.
 \end{itemize}
+
+\subsection{Blood Group Handling: Categorical Metadata, Not Ordinal Diagnosis}
+
+Dropping \code{blood\_group} from the current models is an encoding and evidence-boundary choice, not a claim that blood group is irrelevant. The linked 2025 BMC Endocrine Disorders cross-sectional study reported no statistically significant ABO distribution difference between PCOS and controls, so blood group should not be treated as a standalone PCOS diagnostic feature. Within PCOS patients, however, the same study found blood type associated with menstrual bleeding level and differences in BMI, FSH, LH, and estradiol \href{https://link.springer.com/article/10.1186/s12902-025-01898-0}{(Yang et al., 2025)}. In future iterations, the app should retain validated ABO/Rh blood group as categorical metadata for phenotype and symptom-severity stratification (for example, one-hot encoded or used for subgroup displays), while never feeding the numeric 11--18 codes as an ordinal variable.
 
 \subsection{Data Caveat: ``Cycle Length'' Is Actually Bleeding Duration}
 
