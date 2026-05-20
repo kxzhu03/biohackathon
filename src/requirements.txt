@@ -1,14 +1,16 @@
 # App-only dependencies for Streamlit Community Cloud deployment.
-# See runtime.txt for the Python version pin (3.12).
+# See .python-version for the Python pin (3.12).
 #
 # scikit-learn must stay exact — joblib artifacts are version-sensitive.
-# Everything else uses >= so uv/pip can grab pre-built 3.12 wheels directly.
+# shap is optional: the app degrades gracefully to an info message when
+# it is absent (see explain_patient() in app.py). Omitting it here keeps
+# the cloud install fast; add it back locally if you want SHAP waterfall
+# charts in the cloud UI.
 
 scikit-learn==1.6.1
 joblib==1.4.2
 pandas>=2.2.3
 numpy>=1.26.0,<3
-shap>=0.51.0
 matplotlib>=3.9.0
 seaborn>=0.13.2
 streamlit>=1.35.0
