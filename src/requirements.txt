@@ -1,17 +1,15 @@
 # App-only dependencies for Streamlit Community Cloud deployment.
-# This file is intentionally separate from the root requirements.txt, which
-# pins notebook/reporting packages (tabpfn, jupyter, reportlab, pymupdf) that
-# are not needed at runtime and would cause the cloud install to time out.
+# See runtime.txt for the Python version pin (3.12).
 #
-# scikit-learn must stay pinned — joblib artifacts are version-sensitive.
-# numpy 2.x is fine; streamlit>=1.35.0 dropped the <2 upper bound.
+# scikit-learn must stay exact — joblib artifacts are version-sensitive.
+# Everything else uses >= so uv/pip can grab pre-built 3.12 wheels directly.
 
-pandas==2.2.3
-numpy==2.2.6
 scikit-learn==1.6.1
-matplotlib==3.10.1
-seaborn==0.13.2
 joblib==1.4.2
-shap==0.51.0
+pandas>=2.2.3
+numpy>=1.26.0,<3
+shap>=0.51.0
+matplotlib>=3.9.0
+seaborn>=0.13.2
 streamlit>=1.35.0
-pillow==10.3.0
+pillow>=10.3.0
